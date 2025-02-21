@@ -31,21 +31,25 @@ const mockData = {
 const Index = () => {
   return (
     <Layout>
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-semibold">Dashboard</h1>
+      <div className="space-y-8 bg-dashboard-background min-h-screen">
+        <div className="bg-gradient-to-r from-dashboard-primary/20 to-dashboard-accent p-8 rounded-2xl">
+          <h1 className="text-3xl font-semibold text-dashboard-primary">Dashboard</h1>
           <p className="text-secondary mt-2">Welcome back! Here's your factory overview.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {mockData.stats.map((stat) => (
-            <StatsCard key={stat.title} {...stat} />
+            <StatsCard 
+              key={stat.title} 
+              {...stat} 
+              className="border-none shadow-lg hover:shadow-xl transition-shadow bg-white"
+            />
           ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="p-6 bg-white/50 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4">Inventory Trends</h3>
+          <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
+            <h3 className="text-lg font-semibold mb-4 text-dashboard-primary">Inventory Trends</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={mockData.chartData}>
@@ -56,7 +60,7 @@ const Index = () => {
                   <Line
                     type="monotone"
                     dataKey="inventory"
-                    stroke="#2563EB"
+                    stroke="#7E69AB"
                     strokeWidth={2}
                   />
                 </LineChart>
@@ -64,8 +68,8 @@ const Index = () => {
             </div>
           </Card>
 
-          <Card className="p-6 bg-white/50 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4">Cost Analysis</h3>
+          <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
+            <h3 className="text-lg font-semibold mb-4 text-dashboard-primary">Cost Analysis</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={mockData.chartData}>
@@ -85,20 +89,20 @@ const Index = () => {
           </Card>
         </div>
 
-        <Card className="p-6 bg-white/50 backdrop-blur-sm">
+        <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold">AI Recommendations</h3>
+            <h3 className="text-lg font-semibold text-dashboard-primary">AI Recommendations</h3>
             <span className="text-xs text-secondary">Updated 5 min ago</span>
           </div>
-          <div className="space-y-4">
-            <div className="p-4 bg-primary-100 rounded-lg">
-              <h4 className="font-medium">Inventory Optimization</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 bg-dashboard-accent rounded-xl">
+              <h4 className="font-medium text-dashboard-primary">Inventory Optimization</h4>
               <p className="text-sm text-secondary mt-1">
                 Based on current trends, consider increasing stock of raw material A by 15% to meet projected demand spike in Q4.
               </p>
             </div>
-            <div className="p-4 bg-primary-100 rounded-lg">
-              <h4 className="font-medium">Cost Reduction Opportunity</h4>
+            <div className="p-4 bg-dashboard-accent rounded-xl">
+              <h4 className="font-medium text-dashboard-primary">Cost Reduction Opportunity</h4>
               <p className="text-sm text-secondary mt-1">
                 Supplier B is offering a 12% discount on bulk orders placed before end of month. Potential savings: $3,450.
               </p>

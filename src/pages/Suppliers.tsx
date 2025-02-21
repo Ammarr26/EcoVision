@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
@@ -38,15 +37,19 @@ const mockData = {
 const Suppliers = () => {
   return (
     <Layout>
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-semibold">Supplier Management</h1>
+      <div className="space-y-8 bg-suppliers-background min-h-screen">
+        <div className="bg-gradient-to-l from-suppliers-primary/20 to-suppliers-accent p-8 rounded-2xl">
+          <h1 className="text-3xl font-semibold text-suppliers-primary">Supplier Management</h1>
           <p className="text-secondary mt-2">Monitor and manage supplier relationships</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {mockData.stats.map((stat) => (
-            <StatsCard key={stat.title} {...stat} />
+            <StatsCard 
+              key={stat.title} 
+              {...stat} 
+              className="border-none shadow-lg hover:shadow-xl transition-shadow bg-white"
+            />
           ))}
         </div>
 
@@ -89,24 +92,28 @@ const Suppliers = () => {
           </Card>
         </div>
 
-        <Card className="p-6 bg-white/50 backdrop-blur-sm">
-          <h3 className="text-lg font-semibold mb-4">Top Performing Suppliers</h3>
-          <div className="space-y-4">
-            {mockData.supplierPerformance
-              .sort((a, b) => (b.quality + b.delivery + b.cost) - (a.quality + a.delivery + a.cost))
-              .slice(0, 3)
-              .map((supplier, index) => (
-                <div key={index} className="p-4 bg-primary-100 rounded-lg">
-                  <h4 className="font-medium">{supplier.name}</h4>
-                  <div className="grid grid-cols-3 gap-4 mt-2">
-                    <p className="text-sm text-secondary">Quality: {supplier.quality}%</p>
-                    <p className="text-sm text-secondary">Delivery: {supplier.delivery}%</p>
-                    <p className="text-sm text-secondary">Cost Efficiency: {supplier.cost}%</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {mockData.supplierPerformance
+            .sort((a, b) => (b.quality + b.delivery + b.cost) - (a.quality + a.delivery + a.cost))
+            .slice(0, 3)
+            .map((supplier, index) => (
+              <Card key={index} className="p-6 bg-white shadow-lg">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-full bg-suppliers-accent">
+                    <Users className="w-6 h-6 text-suppliers-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-suppliers-primary">{supplier.name}</h4>
+                    <div className="grid grid-cols-1 gap-2 mt-2">
+                      <p className="text-sm text-secondary">Quality: {supplier.quality}%</p>
+                      <p className="text-sm text-secondary">Delivery: {supplier.delivery}%</p>
+                      <p className="text-sm text-secondary">Cost Efficiency: {supplier.cost}%</p>
+                    </div>
                   </div>
                 </div>
-              ))}
-          </div>
-        </Card>
+              </Card>
+            ))}
+        </div>
       </div>
     </Layout>
   );

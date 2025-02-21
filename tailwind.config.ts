@@ -54,6 +54,32 @@ export default {
           DEFAULT: "#F8FAFC",
           foreground: "#0F172A",
         },
+        // Page-specific colors
+        dashboard: {
+          primary: "#7E69AB",
+          accent: "#E5DEFF",
+          background: "#F8FAFC",
+        },
+        inventory: {
+          primary: "#3B82F6",
+          accent: "#DBEAFE",
+          background: "#F1F5F9",
+        },
+        finance: {
+          primary: "#10B981",
+          accent: "#D1FAE5",
+          background: "#F1FDF7",
+        },
+        suppliers: {
+          primary: "#F59E0B",
+          accent: "#FEF3C7",
+          background: "#FFFBEB",
+        },
+        analytics: {
+          primary: "#EC4899",
+          accent: "#FCE7F3",
+          background: "#FDF2F8",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

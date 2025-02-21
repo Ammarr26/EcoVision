@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
@@ -41,21 +40,25 @@ const mockData = {
 const Finance = () => {
   return (
     <Layout>
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-semibold">Financial Overview</h1>
+      <div className="space-y-8 bg-finance-background min-h-screen">
+        <div className="bg-gradient-to-r from-finance-primary/20 to-finance-accent p-8 rounded-2xl">
+          <h1 className="text-3xl font-semibold text-finance-primary">Financial Overview</h1>
           <p className="text-secondary mt-2">Monitor your financial performance</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {mockData.stats.map((stat) => (
-            <StatsCard key={stat.title} {...stat} />
+            <StatsCard 
+              key={stat.title} 
+              {...stat} 
+              className="border-none shadow-lg hover:shadow-xl transition-shadow bg-white"
+            />
           ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="p-6 bg-white/50 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4">Revenue vs Expenses</h3>
+          <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
+            <h3 className="text-lg font-semibold mb-4 text-finance-primary">Revenue vs Expenses</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={mockData.monthlyFinance}>
@@ -70,8 +73,8 @@ const Finance = () => {
             </div>
           </Card>
 
-          <Card className="p-6 bg-white/50 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4">Expense Distribution</h3>
+          <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
+            <h3 className="text-lg font-semibold mb-4 text-finance-primary">Expense Distribution</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -94,23 +97,20 @@ const Finance = () => {
           </Card>
         </div>
 
-        <Card className="p-6 bg-white/50 backdrop-blur-sm">
-          <h3 className="text-lg font-semibold mb-4">Budget Alerts</h3>
-          <div className="space-y-4">
-            <div className="p-4 bg-warning/10 rounded-lg">
-              <h4 className="font-medium text-warning">Maintenance Budget Alert</h4>
-              <p className="text-sm text-secondary mt-1">
-                Maintenance expenses are approaching the monthly budget limit. Currently at 85% of allocated budget.
-              </p>
-            </div>
-            <div className="p-4 bg-success/10 rounded-lg">
-              <h4 className="font-medium text-success">Cost Saving Opportunity</h4>
-              <p className="text-sm text-secondary mt-1">
-                Bulk purchase discount available from Supplier A. Potential savings of $3,200 on raw materials.
-              </p>
-            </div>
-          </div>
-        </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="p-6 bg-warning/10 border-none shadow-lg">
+            <h4 className="font-medium text-warning">Maintenance Budget Alert</h4>
+            <p className="text-sm text-secondary mt-1">
+              Maintenance expenses are approaching the monthly budget limit. Currently at 85% of allocated budget.
+            </p>
+          </Card>
+          <Card className="p-6 bg-success/10 border-none shadow-lg">
+            <h4 className="font-medium text-success">Cost Saving Opportunity</h4>
+            <p className="text-sm text-secondary mt-1">
+              Bulk purchase discount available from Supplier A. Potential savings of $3,200 on raw materials.
+            </p>
+          </Card>
+        </div>
       </div>
     </Layout>
   );

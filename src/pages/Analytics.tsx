@@ -45,21 +45,25 @@ const mockData = {
 const Analytics = () => {
   return (
     <Layout>
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-3xl font-semibold">Analytics Dashboard</h1>
+      <div className="space-y-8 bg-analytics-background min-h-screen">
+        <div className="bg-gradient-to-tr from-analytics-primary/20 via-analytics-accent to-analytics-background p-8 rounded-2xl">
+          <h1 className="text-3xl font-semibold text-analytics-primary">Analytics Dashboard</h1>
           <p className="text-secondary mt-2">Monitor performance metrics and predictions</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {mockData.stats.map((stat) => (
-            <StatsCard key={stat.title} {...stat} />
+            <StatsCard 
+              key={stat.title} 
+              {...stat} 
+              className="border-none shadow-lg hover:shadow-xl transition-shadow bg-white"
+            />
           ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="p-6 bg-white/50 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4">Production Trends & Predictions</h3>
+          <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
+            <h3 className="text-lg font-semibold mb-4 text-analytics-primary">Production Trends & Predictions</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={mockData.productionTrends}>
@@ -88,8 +92,8 @@ const Analytics = () => {
             </div>
           </Card>
 
-          <Card className="p-6 bg-white/50 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4">Quality Distribution</h3>
+          <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
+            <h3 className="text-lg font-semibold mb-4 text-analytics-primary">Quality Distribution</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -112,8 +116,8 @@ const Analytics = () => {
           </Card>
         </div>
 
-        <Card className="p-6 bg-white/50 backdrop-blur-sm">
-          <h3 className="text-lg font-semibold mb-4">Process Efficiency Analysis</h3>
+        <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
+          <h3 className="text-lg font-semibold mb-4 text-analytics-primary">Process Efficiency Analysis</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={mockData.efficiencyData}>
