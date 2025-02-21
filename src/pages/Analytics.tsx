@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
@@ -126,7 +125,6 @@ const Analytics = () => {
                   dataKey="efficiency" 
                   fill="#2563EB" 
                   name="Efficiency Rate"
-                  label={({ value }) => `${value}%`}
                 />
               </BarChart>
             </ResponsiveContainer>
