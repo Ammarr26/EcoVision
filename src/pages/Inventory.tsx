@@ -1,8 +1,11 @@
+
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
 import { StatsCard } from '@/components/StatsCard';
-import { Package, PackageOpen, BoxSelect, Truck } from 'lucide-react';
+import { Package, PackageOpen, BoxSelect, Truck, Plus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   LineChart,
   Line,
@@ -11,30 +14,128 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar
+  PieChart,
+  Pie,
+  Cell
 } from 'recharts';
 
-const mockData = {
-  stats: [
-    { title: "Raw Materials", value: "1,234", icon: <Package className="w-5 h-5" />, trend: { value: 5, positive: true } },
-    { title: "Work in Progress", value: "456", icon: <PackageOpen className="w-5 h-5" />, trend: { value: 2, positive: true } },
-    { title: "Finished Goods", value: "789", icon: <BoxSelect className="w-5 h-5" />, trend: { value: 3, positive: false } },
-    { title: "In Transit", value: "123", icon: <Truck className="w-5 h-5" />, trend: { value: 8, positive: true } },
-  ],
-  stockLevels: Array.from({ length: 6 }, (_, i) => ({
-    category: ['Electronics', 'Metal Parts', 'Plastics', 'Chemicals', 'Packaging', 'Tools'][i],
-    current: Math.floor(Math.random() * 1000) + 500,
-    minimum: Math.floor(Math.random() * 300) + 200,
-  })),
-  monthlyTrends: Array.from({ length: 12 }, (_, i) => ({
-    month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
-    inflow: Math.floor(Math.random() * 1000) + 500,
-    outflow: Math.floor(Math.random() * 800) + 400,
-  })),
-};
+interface Material {
+  id: string;
+  name: string;
+  quantity: number;
+  minRequired: number;
+  unit: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  materials: Material[];
+  color: string;
+}
+
+const mockCategories: Category[] = [
+  {
+    id: '1',
+    name: 'Electronics',
+    color: '#3B82F6',
+    materials: [
+      { id: '1-1', name: 'Microchips', quantity: 500, minRequired: 100, unit: 'pcs' },
+      { id: '1-2', name: 'Circuit Boards', quantity: 300, minRequired: 50, unit: 'pcs' },
+    ]
+  },
+  {
+    id: '2',
+    name: 'Metal Parts',
+    color: '#10B981',
+    materials: [
+      { id: '2-1', name: 'Steel Sheets', quantity: 1000, minRequired: 200, unit: 'kg' },
+      { id: '2-2', name: 'Aluminum Rods', quantity: 800, minRequired: 150, unit: 'kg' },
+    ]
+  },
+];
 
 const Inventory = () => {
+  const [categories, setCategories] = React.useState<Category[]>(mockCategories);
+  const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(null);
+  const [newMaterial, setNewMaterial] = React.useState({
+    name: '',
+    quantity: '',
+    minRequired: '',
+    unit: ''
+  });
+  const [newCategoryName, setNewCategoryName] = React.useState('');
+
+  const stats = [
+    { 
+      title: "Total Categories", 
+      value: categories.length.toString(), 
+      icon: <Package className="w-5 h-5" />, 
+      trend: { value: 2, positive: true } 
+    },
+    { 
+      title: "Total Materials", 
+      value: categories.reduce((acc, cat) => acc + cat.materials.length, 0).toString(), 
+      icon: <PackageOpen className="w-5 h-5" />, 
+      trend: { value: 5, positive: true } 
+    },
+    { 
+      title: "Low Stock Items", 
+      value: categories.reduce((acc, cat) => 
+        acc + cat.materials.filter(m => m.quantity < m.minRequired).length, 0).toString(),
+      icon: <BoxSelect className="w-5 h-5" />, 
+      trend: { value: 3, positive: false } 
+    },
+    { 
+      title: "Stock Value", 
+      value: "$123,456", 
+      icon: <Truck className="w-5 h-5" />, 
+      trend: { value: 8, positive: true } 
+    },
+  ];
+
+  const handleAddCategory = () => {
+    if (!newCategoryName) return;
+    const newCategory: Category = {
+      id: Date.now().toString(),
+      name: newCategoryName,
+      materials: [],
+      color: `#${Math.floor(Math.random()*16777215).toString(16)}`,
+    };
+    setCategories([...categories, newCategory]);
+    setNewCategoryName('');
+  };
+
+  const handleAddMaterial = () => {
+    if (!selectedCategory || !newMaterial.name || !newMaterial.quantity) return;
+    
+    const updatedCategories = categories.map(cat => {
+      if (cat.id === selectedCategory.id) {
+        return {
+          ...cat,
+          materials: [...cat.materials, {
+            id: Date.now().toString(),
+            name: newMaterial.name,
+            quantity: Number(newMaterial.quantity),
+            minRequired: Number(newMaterial.minRequired),
+            unit: newMaterial.unit
+          }]
+        };
+      }
+      return cat;
+    });
+    
+    setCategories(updatedCategories);
+    setNewMaterial({ name: '', quantity: '', minRequired: '', unit: '' });
+  };
+
+  const getPieChartData = (category: Category) => {
+    return category.materials.map(material => ({
+      name: material.name,
+      value: material.quantity
+    }));
+  };
+
   return (
     <Layout>
       <div className="space-y-8 bg-inventory-background min-h-screen">
@@ -44,7 +145,7 @@ const Inventory = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {mockData.stats.map((stat) => (
+          {stats.map((stat) => (
             <StatsCard 
               key={stat.title} 
               {...stat} 
@@ -55,59 +156,117 @@ const Inventory = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
-            <h3 className="text-lg font-semibold mb-4 text-inventory-primary">Stock Levels by Category</h3>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mockData.stockLevels}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="category" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="current" fill="#3B82F6" name="Current Stock" />
-                  <Bar dataKey="minimum" fill="#DC2626" name="Minimum Required" />
-                </BarChart>
-              </ResponsiveContainer>
+            <h3 className="text-lg font-semibold mb-4 text-inventory-primary">Add New Category</h3>
+            <div className="flex gap-4">
+              <Input
+                placeholder="Category Name"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+              />
+              <Button onClick={handleAddCategory}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Category
+              </Button>
             </div>
           </Card>
 
-          <Card className="p-6 bg-white/50 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4">Monthly Inventory Flow</h3>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={mockData.monthlyTrends}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="inflow" stroke="#2563EB" name="Inflow" />
-                  <Line type="monotone" dataKey="outflow" stroke="#DC2626" name="Outflow" />
-                </LineChart>
-              </ResponsiveContainer>
+          <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
+            <h3 className="text-lg font-semibold mb-4 text-inventory-primary">Add New Material</h3>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <select
+                  className="border rounded-md p-2"
+                  onChange={(e) => setSelectedCategory(categories.find(c => c.id === e.target.value) || null)}
+                  value={selectedCategory?.id || ''}
+                >
+                  <option value="">Select Category</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+                <Input
+                  placeholder="Material Name"
+                  value={newMaterial.name}
+                  onChange={(e) => setNewMaterial({...newMaterial, name: e.target.value})}
+                />
+                <Input
+                  type="number"
+                  placeholder="Quantity"
+                  value={newMaterial.quantity}
+                  onChange={(e) => setNewMaterial({...newMaterial, quantity: e.target.value})}
+                />
+                <Input
+                  type="number"
+                  placeholder="Minimum Required"
+                  value={newMaterial.minRequired}
+                  onChange={(e) => setNewMaterial({...newMaterial, minRequired: e.target.value})}
+                />
+                <Input
+                  placeholder="Unit (e.g., pcs, kg)"
+                  value={newMaterial.unit}
+                  onChange={(e) => setNewMaterial({...newMaterial, unit: e.target.value})}
+                />
+              </div>
+              <Button onClick={handleAddMaterial} className="w-full">Add Material</Button>
             </div>
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {mockData.stockLevels
-            .filter(item => item.current < item.minimum)
-            .map((item, index) => (
-              <Card key={index} className="p-6 bg-white shadow-lg">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-full bg-inventory-accent">
-                    <Package className="w-6 h-6 text-inventory-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-inventory-primary">{item.category}</h4>
-                    <p className="text-sm text-secondary mt-1">
-                      Current stock: {item.current} units
-                    </p>
-                    <p className="text-sm text-destructive">
-                      Minimum required: {item.minimum} units
-                    </p>
-                  </div>
+        <div className="grid grid-cols-1 gap-6">
+          {categories.map(category => (
+            <Card key={category.id} className="p-6 bg-white shadow-lg">
+              <h3 className="text-xl font-semibold mb-4 text-inventory-primary">{category.name}</h3>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full bg-white rounded-lg">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Material</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Min Required</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {category.materials.map(material => (
+                        <tr key={material.id}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{material.name}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{material.quantity}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{material.minRequired}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{material.unit}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              </Card>
-            ))}
+
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={getPieChartData(category)}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        fill={category.color}
+                        dataKey="value"
+                        label={({ name, value }) => `${name}: ${value}`}
+                      >
+                        {getPieChartData(category).map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={`${category.color}${(index + 5) * 20}`} 
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </Card>
+          ))}
         </div>
       </div>
     </Layout>
