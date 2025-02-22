@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
 import { StatsCard } from '@/components/StatsCard';
-import { Package, PackageOpen, BoxSelect, Truck, Plus, Trash2 } from 'lucide-react';
+import { Package, PackageOpen, BoxSelect, Truck, Plus, Trash2, Edit2, Check, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -74,6 +73,9 @@ const mockCategories: Category[] = [
 const Inventory = () => {
   const [categories, setCategories] = React.useState<Category[]>(mockCategories);
   const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(null);
+  const [editingCategoryId, setEditingCategoryId] = React.useState<string | null>(null);
+  const [editingMaterialId, setEditingMaterialId] = React.useState<string | null>(null);
+  const [editValue, setEditValue] = React.useState('');
   const [newMaterial, setNewMaterial] = React.useState({
     name: '',
     quantity: '',
@@ -109,6 +111,44 @@ const Inventory = () => {
       trend: { value: 8, positive: true } 
     },
   ];
+
+  const handleEditCategory = (categoryId: string, currentName: string) => {
+    setEditingCategoryId(categoryId);
+    setEditValue(currentName);
+  };
+
+  const handleEditMaterial = (materialId: string, currentName: string) => {
+    setEditingMaterialId(materialId);
+    setEditValue(currentName);
+  };
+
+  const saveEditedCategory = (categoryId: string) => {
+    if (!editValue.trim()) return;
+    
+    setCategories(categories.map(cat => 
+      cat.id === categoryId ? { ...cat, name: editValue } : cat
+    ));
+    setEditingCategoryId(null);
+    setEditValue('');
+  };
+
+  const saveEditedMaterial = (categoryId: string, materialId: string) => {
+    if (!editValue.trim()) return;
+    
+    setCategories(categories.map(cat => {
+      if (cat.id === categoryId) {
+        return {
+          ...cat,
+          materials: cat.materials.map(mat => 
+            mat.id === materialId ? { ...mat, name: editValue } : mat
+          )
+        };
+      }
+      return cat;
+    }));
+    setEditingMaterialId(null);
+    setEditValue('');
+  };
 
   const handleAddCategory = () => {
     if (!newCategoryName) return;
@@ -239,7 +279,42 @@ const Inventory = () => {
           {categories.map(category => (
             <Card key={category.id} className="p-6 bg-white shadow-lg">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-semibold text-inventory-primary">{category.name}</h3>
+                {editingCategoryId === category.id ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      className="w-48"
+                    />
+                    <Button
+                      size="sm"
+                      className="text-green-600"
+                      variant="ghost"
+                      onClick={() => saveEditedCategory(category.id)}
+                    >
+                      <Check className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="text-red-600"
+                      variant="ghost"
+                      onClick={() => setEditingCategoryId(null)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-semibold text-inventory-primary">{category.name}</h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEditCategory(category.id, category.name)}
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
                 <Button 
                   variant="destructive" 
                   size="sm"
@@ -259,15 +334,56 @@ const Inventory = () => {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Min Required</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {category.materials.map(material => (
                         <tr key={material.id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{material.name}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {editingMaterialId === material.id ? (
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  value={editValue}
+                                  onChange={(e) => setEditValue(e.target.value)}
+                                  className="w-32"
+                                />
+                                <Button
+                                  size="sm"
+                                  className="text-green-600"
+                                  variant="ghost"
+                                  onClick={() => saveEditedMaterial(category.id, material.id)}
+                                >
+                                  <Check className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  className="text-red-600"
+                                  variant="ghost"
+                                  onClick={() => setEditingMaterialId(null)}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <span>{material.name}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEditMaterial(material.id, material.name)}
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            )}
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{material.quantity}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{material.minRequired}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{material.unit}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {/* Add additional actions here if needed */}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
