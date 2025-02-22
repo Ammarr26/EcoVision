@@ -4,7 +4,7 @@ import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Text } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { LineChart, TrendingUp, Box, Activity, Bell, Star, ChevronDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -19,7 +19,8 @@ const marketSentimentData = Array.from({ length: 50 }, () => ({
   z: Math.random() * 1000,
   name: `Product ${Math.floor(Math.random() * 100)}`,
   sentiment: Math.random(),
-  demand: Math.random() * 100
+  demand: Math.random() * 100,
+  fill: Math.random() > 0.5 ? "#4ADE80" : "#FB7185" // Pre-compute the fill color
 }));
 
 // Mock data for competitor analysis
@@ -30,7 +31,7 @@ const competitorData = [
 ];
 
 // 3D Data Cube Component
-const DataCube = () => {
+function DataCube() {
   return (
     <mesh rotation={[0, Math.PI / 4, 0]}>
       <boxGeometry args={[2, 2, 2]} />
@@ -42,7 +43,7 @@ const DataCube = () => {
       />
     </mesh>
   );
-};
+}
 
 const Analytics = () => {
   const [selectedCategory, setSelectedCategory] = useState('Electronics');
@@ -71,7 +72,7 @@ const Analytics = () => {
     }, 15000);
 
     return () => clearInterval(interval);
-  }, [selectedCategory]);
+  }, [selectedCategory, toast]);
 
   return (
     <Layout>
@@ -136,8 +137,8 @@ const Analytics = () => {
                     }}
                   />
                   <Scatter 
-                    data={marketSentimentData} 
-                    fill={(entry) => entry.sentiment > 0.5 ? "#4ADE80" : "#FB7185"}
+                    data={marketSentimentData}
+                    fill="#8884d8"
                   />
                 </ScatterChart>
               </ResponsiveContainer>
