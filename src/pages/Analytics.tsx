@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
@@ -70,16 +69,16 @@ const Analytics = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800 text-white p-6 space-y-6">
+      <div className="min-h-screen bg-background p-6 space-y-6">
         {/* Header section */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+            <h1 className="text-3xl font-bold text-primary">
               Advanced Analytics Hub
             </h1>
-            <p className="text-gray-400 mt-2">Real-time Market Intelligence</p>
+            <p className="text-muted-foreground mt-2">Real-time Market Intelligence</p>
           </div>
-          <Button variant="outline" className="border-purple-500">
+          <Button variant="outline" className="border-primary">
             <Bell className="h-4 w-4 mr-2" />
             {alerts.length} Alerts
           </Button>
@@ -87,15 +86,15 @@ const Analytics = () => {
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Market Analysis Radar (replacing 3D visualization) */}
-          <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
+          {/* Market Analysis Radar */}
+          <Card className="p-6">
             <h3 className="text-xl font-semibold mb-4">Market Analysis Matrix</h3>
             <div className="h-[400px] rounded-lg overflow-hidden">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart outerRadius={120} data={marketMetrics}>
-                  <PolarGrid stroke="#666" />
-                  <PolarAngleAxis dataKey="subject" stroke="#fff" />
-                  <PolarRadiusAxis stroke="#fff" />
+                  <PolarGrid />
+                  <PolarAngleAxis dataKey="subject" />
+                  <PolarRadiusAxis />
                   <Radar 
                     name="Your Company"
                     dataKey="A"
@@ -112,8 +111,8 @@ const Analytics = () => {
                   />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: 'rgba(0,0,0,0.8)', 
-                      border: '1px solid rgba(147, 51, 234, 0.2)',
+                      backgroundColor: 'white', 
+                      border: '1px solid #e2e8f0',
                       borderRadius: '0.5rem'
                     }}
                   />
@@ -123,30 +122,30 @@ const Analytics = () => {
           </Card>
 
           {/* Market Sentiment Constellation */}
-          <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
+          <Card className="p-6">
             <h3 className="text-xl font-semibold mb-4">Market Sentiment Constellation</h3>
             <div className="h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
                 <ScatterChart>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                  <XAxis type="number" dataKey="x" name="Market Share" stroke="#fff" />
-                  <YAxis type="number" dataKey="y" name="Growth" stroke="#fff" />
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" dataKey="x" name="Market Share" />
+                  <YAxis type="number" dataKey="y" name="Growth" />
                   <ZAxis type="number" dataKey="z" range={[50, 400]} />
                   <Tooltip 
                     cursor={{ strokeDasharray: '3 3' }}
                     contentStyle={{ 
-                      backgroundColor: 'rgba(0,0,0,0.8)', 
-                      border: '1px solid rgba(147, 51, 234, 0.2)',
+                      backgroundColor: 'white', 
+                      border: '1px solid #e2e8f0',
                       borderRadius: '0.5rem'
                     }}
                     content={({ payload }) => {
                       if (payload && payload[0]) {
                         const data = payload[0].payload;
                         return (
-                          <div className="bg-black/80 p-3 rounded-lg border border-purple-500/20">
-                            <p className="text-white">{data.name}</p>
-                            <p className="text-gray-400">Demand: {Math.round(data.demand)}</p>
-                            <p className={`text-${data.sentiment > 0.5 ? 'green' : 'red'}-400`}>
+                          <div className="bg-white p-3 rounded-lg border shadow-sm">
+                            <p className="font-medium">{data.name}</p>
+                            <p className="text-muted-foreground">Demand: {Math.round(data.demand)}</p>
+                            <p className={`text-${data.sentiment > 0.5 ? 'green' : 'red'}-600`}>
                               Sentiment: {data.sentiment > 0.5 ? 'Positive' : 'Negative'}
                             </p>
                           </div>
@@ -157,7 +156,7 @@ const Analytics = () => {
                   />
                   <Scatter 
                     data={marketSentimentData}
-                    fill="#8884d8"
+                    fill="#7E69AB"
                   />
                 </ScatterChart>
               </ResponsiveContainer>
@@ -166,12 +165,12 @@ const Analytics = () => {
         </div>
 
         {/* Competitor X-Ray */}
-        <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
+        <Card className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold">Competitor X-Ray Analysis</h3>
             <div className="flex items-center gap-2">
               <select 
-                className="bg-black/20 border border-purple-500/20 rounded-lg px-4 py-2 text-white"
+                className="bg-background border rounded-lg px-4 py-2"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
@@ -184,17 +183,17 @@ const Analytics = () => {
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={competitorData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                <XAxis dataKey="name" stroke="#fff" />
-                <YAxis stroke="#fff" />
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: 'rgba(0,0,0,0.8)', 
-                    border: '1px solid rgba(147, 51, 234, 0.2)',
+                    backgroundColor: 'white', 
+                    border: '1px solid #e2e8f0',
                     borderRadius: '0.5rem'
                   }}
                 />
-                <Bar dataKey="pricing" name="Pricing Efficiency" fill="#8884d8" />
+                <Bar dataKey="pricing" name="Pricing Efficiency" fill="#7E69AB" />
                 <Bar dataKey="stockouts" name="Stockouts (Weekly)" fill="#82ca9d" />
                 <Bar dataKey="leadTime" name="Lead Time (Days)" fill="#ffc658" />
               </BarChart>
@@ -207,23 +206,21 @@ const Analytics = () => {
           {alerts.map(alert => (
             <Card 
               key={alert.id}
-              className={`p-4 bg-black/40 backdrop-blur-xl border ${
-                alert.type === 'warning' ? 'border-red-500/20' : 'border-blue-500/20'
-              }`}
+              className="p-4 border"
             >
               <div className="flex items-start gap-4">
                 <div className={`p-2 rounded-full ${
-                  alert.type === 'warning' ? 'bg-red-500/20' : 'bg-blue-500/20'
+                  alert.type === 'warning' ? 'bg-red-100' : 'bg-blue-100'
                 }`}>
                   {alert.type === 'warning' ? (
-                    <Activity className="h-4 w-4 text-red-400" />
+                    <Activity className="h-4 w-4 text-red-600" />
                   ) : (
-                    <Star className="h-4 w-4 text-blue-400" />
+                    <Star className="h-4 w-4 text-blue-600" />
                   )}
                 </div>
                 <div className="flex-1">
                   <h4 className="font-medium mb-1">{alert.type === 'warning' ? 'Warning' : 'Info'}</h4>
-                  <p className="text-sm text-gray-400">{alert.message}</p>
+                  <p className="text-sm text-muted-foreground">{alert.message}</p>
                 </div>
                 <Button variant="ghost" size="sm">
                   Take Action
