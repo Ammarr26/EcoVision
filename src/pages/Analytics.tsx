@@ -1,128 +1,121 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, Suspense } from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
-import { StatsCard } from '@/components/StatsCard';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import { LineChart, TrendingUp, Box, Activity, MessageCircle, Globe, Building2, ChevronDown } from 'lucide-react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Text } from '@react-three/drei';
+import { LineChart, TrendingUp, Box, Activity, Bell, Star, ChevronDown } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
 import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  ScatterChart,
-  Scatter,
-  ZAxis
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, BarChart, Bar, ScatterChart, Scatter, ZAxis
 } from 'recharts';
 
-// Mock data for market sentiment
+// Mock data for market sentiment constellation
 const marketSentimentData = Array.from({ length: 50 }, () => ({
   x: Math.random() * 100,
   y: Math.random() * 100,
-  z: Math.random() * 1000, // demand size
+  z: Math.random() * 1000,
   name: `Product ${Math.floor(Math.random() * 100)}`,
-  competition: Math.random(), // competition level for color
+  sentiment: Math.random(),
+  demand: Math.random() * 100
 }));
 
-// Mock data for predictions
-const predictionData = Array.from({ length: 12 }, (_, i) => ({
-  month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
-  actual: Math.floor(Math.random() * 1000) + 2000,
-  predicted: Math.floor(Math.random() * 1000) + 2000,
-  optimistic: Math.floor(Math.random() * 1200) + 2200,
-  pessimistic: Math.floor(Math.random() * 800) + 1800,
-}));
+// Mock data for competitor analysis
+const competitorData = [
+  { name: 'Your Company', pricing: 85, stockouts: 5, leadTime: 2 },
+  { name: 'Competitor A', pricing: 78, stockouts: 8, leadTime: 3 },
+  { name: 'Competitor B', pricing: 92, stockouts: 3, leadTime: 1.5 },
+];
+
+// 3D Data Cube Component
+const DataCube = () => {
+  return (
+    <mesh rotation={[0, Math.PI / 4, 0]}>
+      <boxGeometry args={[2, 2, 2]} />
+      <meshStandardMaterial 
+        color="#7E69AB"
+        transparent
+        opacity={0.7}
+        wireframe
+      />
+    </mesh>
+  );
+};
 
 const Analytics = () => {
-  const [timeSliderValue, setTimeSliderValue] = useState([50]);
-  const [viewMode, setViewMode] = useState<'macro' | 'micro'>('macro');
-  const [chatInput, setChatInput] = useState('');
-  const [chatMessages, setChatMessages] = useState<Array<{ text: string; sender: 'user' | 'ai' }>>([]);
+  const [selectedCategory, setSelectedCategory] = useState('Electronics');
+  const { toast } = useToast();
+  const [alerts, setAlerts] = React.useState([
+    { id: 1, message: "Price surge detected in Electronics category", type: "warning" },
+    { id: 2, message: "New competitor entered the market", type: "info" }
+  ]);
 
-  const handleChatSubmit = () => {
-    if (!chatInput.trim()) return;
-    
-    setChatMessages(prev => [...prev, { text: chatInput, sender: 'user' }]);
-    // Simulate AI response
-    setTimeout(() => {
-      setChatMessages(prev => [...prev, { 
-        text: `Analysis: Based on historical data and market trends, ${chatInput.toLowerCase()} shows a 15% potential increase in Q3. Recommend monitoring supply chain factors.`, 
-        sender: 'ai' 
-      }]);
-    }, 1000);
-    setChatInput('');
-  };
+  // Simulate real-time alerts
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      const newAlert = {
+        id: Date.now(),
+        message: `Market shift detected in ${selectedCategory}`,
+        type: Math.random() > 0.5 ? "warning" : "info"
+      };
+      
+      toast({
+        title: "Market Alert",
+        description: newAlert.message,
+        variant: newAlert.type === "warning" ? "destructive" : "default"
+      });
+      
+      setAlerts(prev => [...prev, newAlert].slice(-5));
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [selectedCategory]);
 
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800 text-white p-6 space-y-6">
-        {/* Header Section */}
+        {/* Header */}
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-              Predictive Intelligence Lab
+              Advanced Analytics Hub
             </h1>
-            <p className="text-gray-400 mt-2">AI-Powered Market Analysis & Forecasting</p>
+            <p className="text-gray-400 mt-2">Real-time Market Intelligence</p>
           </div>
-          <div className="flex gap-4">
-            <Button 
-              variant="outline" 
-              className={`border-purple-500 ${viewMode === 'macro' ? 'bg-purple-500/20' : ''}`}
-              onClick={() => setViewMode('macro')}
-            >
-              Macro View
-            </Button>
-            <Button 
-              variant="outline" 
-              className={`border-purple-500 ${viewMode === 'micro' ? 'bg-purple-500/20' : ''}`}
-              onClick={() => setViewMode('micro')}
-            >
-              Micro View
-            </Button>
-          </div>
+          <Button variant="outline" className="border-purple-500">
+            <Bell className="h-4 w-4 mr-2" />
+            {alerts.length} Alerts
+          </Button>
         </div>
-
-        {/* Time Machine Slider */}
-        <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
-          <h3 className="text-xl font-semibold mb-4">Time Machine Predictor</h3>
-          <div className="space-y-4">
-            <Slider
-              defaultValue={[50]}
-              max={100}
-              step={1}
-              value={timeSliderValue}
-              onValueChange={setTimeSliderValue}
-              className="w-full"
-            />
-            <div className="flex justify-between text-sm text-gray-400">
-              <span>Past (12 months)</span>
-              <span>Present</span>
-              <span>Future (12 months)</span>
-            </div>
-          </div>
-        </Card>
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Market Sentiment Galaxy */}
+          {/* 3D Data Cube */}
           <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
-            <h3 className="text-xl font-semibold mb-4">Market Sentiment Galaxy</h3>
+            <h3 className="text-xl font-semibold mb-4">3D Market Analysis</h3>
+            <div className="h-[400px] rounded-lg overflow-hidden">
+              <Canvas>
+                <ambientLight intensity={0.5} />
+                <pointLight position={[10, 10, 10]} />
+                <Suspense fallback={null}>
+                  <DataCube />
+                  <OrbitControls enableZoom={true} />
+                </Suspense>
+              </Canvas>
+            </div>
+          </Card>
+
+          {/* Market Sentiment Constellation */}
+          <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
+            <h3 className="text-xl font-semibold mb-4">Market Sentiment Constellation</h3>
             <div className="h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
                 <ScatterChart>
                   <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                  <XAxis type="number" dataKey="x" name="Demand" />
-                  <YAxis type="number" dataKey="y" name="Price" />
+                  <XAxis type="number" dataKey="x" name="Market Share" />
+                  <YAxis type="number" dataKey="y" name="Growth" />
                   <ZAxis type="number" dataKey="z" range={[50, 400]} />
                   <Tooltip 
                     cursor={{ strokeDasharray: '3 3' }}
@@ -132,8 +125,10 @@ const Analytics = () => {
                         return (
                           <div className="bg-black/80 p-3 rounded-lg border border-purple-500/20">
                             <p className="text-white">{data.name}</p>
-                            <p className="text-gray-400">Demand: {Math.round(data.z)}</p>
-                            <p className="text-gray-400">Competition: {data.competition.toFixed(2)}</p>
+                            <p className="text-gray-400">Demand: {Math.round(data.demand)}</p>
+                            <p className={`text-${data.sentiment > 0.5 ? 'green' : 'red'}-400`}>
+                              Sentiment: {data.sentiment > 0.5 ? 'Positive' : 'Negative'}
+                            </p>
                           </div>
                         );
                       }
@@ -142,70 +137,35 @@ const Analytics = () => {
                   />
                   <Scatter 
                     data={marketSentimentData} 
-                    fill="#8884d8"
-                    stroke="#fff"
+                    fill={(entry) => entry.sentiment > 0.5 ? "#4ADE80" : "#FB7185"}
                   />
                 </ScatterChart>
               </ResponsiveContainer>
             </div>
           </Card>
-
-          {/* AI Co-Pilot Chat */}
-          <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
-            <h3 className="text-xl font-semibold mb-4">AI Co-Pilot Chat</h3>
-            <div className="h-[400px] flex flex-col">
-              <div className="flex-1 overflow-y-auto space-y-4 mb-4">
-                {chatMessages.map((message, index) => (
-                  <div 
-                    key={index}
-                    className={`p-3 rounded-lg max-w-[80%] ${
-                      message.sender === 'user' 
-                        ? 'bg-purple-500/20 ml-auto' 
-                        : 'bg-blue-500/20'
-                    }`}
-                  >
-                    {message.text}
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  className="bg-white/10 border-purple-500/30"
-                  placeholder="Ask about market predictions..."
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleChatSubmit()}
-                />
-                <Button onClick={handleChatSubmit}>
-                  <MessageCircle className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </Card>
         </div>
 
-        {/* Prediction Timeline */}
+        {/* Competitor X-Ray */}
         <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
-          <h3 className="text-xl font-semibold mb-4">Prediction Timeline</h3>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-semibold">Competitor X-Ray Analysis</h3>
+            <div className="flex items-center gap-2">
+              <select 
+                className="bg-black/20 border border-purple-500/20 rounded-lg px-4 py-2 text-white"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="Electronics">Electronics</option>
+                <option value="Textiles">Textiles</option>
+                <option value="Food">Food & Beverage</option>
+              </select>
+            </div>
+          </div>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={predictionData}>
-                <defs>
-                  <linearGradient id="colorPredicted" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorOptimistic" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
-                  </linearGradient>
-                  <linearGradient id="colorPessimistic" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ffc658" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#ffc658" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
+              <BarChart data={competitorData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                <XAxis dataKey="month" stroke="#fff" />
+                <XAxis dataKey="name" stroke="#fff" />
                 <YAxis stroke="#fff" />
                 <Tooltip 
                   contentStyle={{ 
@@ -214,81 +174,43 @@ const Analytics = () => {
                     borderRadius: '0.5rem'
                   }}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="actual" 
-                  stroke="#8884d8" 
-                  fill="url(#colorPredicted)" 
-                  name="Actual"
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="predicted" 
-                  stroke="#82ca9d" 
-                  fill="url(#colorOptimistic)" 
-                  name="Predicted"
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="pessimistic" 
-                  stroke="#ffc658" 
-                  fill="url(#colorPessimistic)" 
-                  name="Pessimistic"
-                />
-              </AreaChart>
+                <Bar dataKey="pricing" name="Pricing Efficiency" fill="#8884d8" />
+                <Bar dataKey="stockouts" name="Stockouts (Weekly)" fill="#82ca9d" />
+                <Bar dataKey="leadTime" name="Lead Time (Days)" fill="#ffc658" />
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </Card>
 
-        {/* Competitor Analysis */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-semibold">Market Position</h4>
-              <Globe className="h-5 w-5 text-purple-400" />
-            </div>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span>Market Share</span>
-                <span className="text-green-400">32%</span>
+        {/* Real-Time Alerts */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {alerts.map(alert => (
+            <Card 
+              key={alert.id}
+              className={`p-4 bg-black/40 backdrop-blur-xl border ${
+                alert.type === 'warning' ? 'border-red-500/20' : 'border-blue-500/20'
+              }`}
+            >
+              <div className="flex items-start gap-4">
+                <div className={`p-2 rounded-full ${
+                  alert.type === 'warning' ? 'bg-red-500/20' : 'bg-blue-500/20'
+                }`}>
+                  {alert.type === 'warning' ? (
+                    <Activity className="h-4 w-4 text-red-400" />
+                  ) : (
+                    <Star className="h-4 w-4 text-blue-400" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-medium mb-1">{alert.type === 'warning' ? 'Warning' : 'Info'}</h4>
+                  <p className="text-sm text-gray-400">{alert.message}</p>
+                </div>
+                <Button variant="ghost" size="sm">
+                  Take Action
+                </Button>
               </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div className="bg-purple-500 h-2 rounded-full" style={{ width: '32%' }}></div>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-semibold">Pricing Strategy</h4>
-              <Building2 className="h-5 w-5 text-purple-400" />
-            </div>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span>Price Competitiveness</span>
-                <span className="text-yellow-400">85%</span>
-              </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div className="bg-yellow-400 h-2 rounded-full" style={{ width: '85%' }}></div>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-semibold">Innovation Index</h4>
-              <TrendingUp className="h-5 w-5 text-purple-400" />
-            </div>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span>R&D Progress</span>
-                <span className="text-blue-400">92%</span>
-              </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div className="bg-blue-400 h-2 rounded-full" style={{ width: '92%' }}></div>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          ))}
         </div>
       </div>
     </Layout>
