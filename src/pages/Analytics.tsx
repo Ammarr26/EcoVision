@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, Suspense } from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
@@ -20,7 +19,7 @@ const marketSentimentData = Array.from({ length: 50 }, () => ({
   name: `Product ${Math.floor(Math.random() * 100)}`,
   sentiment: Math.random(),
   demand: Math.random() * 100,
-  fill: Math.random() > 0.5 ? "#4ADE80" : "#FB7185" // Pre-compute the fill color
+  fill: Math.random() > 0.5 ? "#4ADE80" : "#FB7185"
 }));
 
 // Mock data for competitor analysis
@@ -30,18 +29,17 @@ const competitorData = [
   { name: 'Competitor B', pricing: 92, stockouts: 3, leadTime: 1.5 },
 ];
 
-// 3D Data Cube Component
-function DataCube() {
+// Simple cube for 3D visualization
+function Scene() {
   return (
-    <mesh rotation={[0, Math.PI / 4, 0]}>
-      <boxGeometry args={[2, 2, 2]} />
-      <meshStandardMaterial 
-        color="#7E69AB"
-        transparent
-        opacity={0.7}
-        wireframe
-      />
-    </mesh>
+    <group>
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} />
+      <mesh rotation={[0, Math.PI / 4, 0]}>
+        <boxGeometry args={[2, 2, 2]} />
+        <meshStandardMaterial color="#7E69AB" transparent opacity={0.7} wireframe />
+      </mesh>
+    </group>
   );
 }
 
@@ -77,7 +75,7 @@ const Analytics = () => {
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800 text-white p-6 space-y-6">
-        {/* Header */}
+        {/* Header section */}
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
@@ -98,11 +96,13 @@ const Analytics = () => {
             <h3 className="text-xl font-semibold mb-4">3D Market Analysis</h3>
             <div className="h-[400px] rounded-lg overflow-hidden">
               <Canvas>
-                <ambientLight intensity={0.5} />
-                <pointLight position={[10, 10, 10]} />
                 <Suspense fallback={null}>
-                  <DataCube />
-                  <OrbitControls enableZoom={true} />
+                  <Scene />
+                  <OrbitControls 
+                    enablePan={false}
+                    enableZoom={true}
+                    enableRotate={true}
+                  />
                 </Suspense>
               </Canvas>
             </div>
@@ -146,7 +146,7 @@ const Analytics = () => {
           </Card>
         </div>
 
-        {/* Competitor X-Ray */}
+        {/* Competitor X-Ray and Real-Time Alerts sections */}
         <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold">Competitor X-Ray Analysis</h3>
