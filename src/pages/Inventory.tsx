@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
 import { StatsCard } from '@/components/StatsCard';
-import { Package, PackageOpen, BoxSelect, Truck, Plus } from 'lucide-react';
+import { Package, PackageOpen, BoxSelect, Truck, Plus, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,11 +35,11 @@ interface Category {
 }
 
 const colorPalettes = {
-  electronics: ['#9b87f5', '#7E69AB', '#6E59A5', '#E5DEFF', '#D6BCFA'],
-  metals: ['#3B82F6', '#2563EB', '#1D4ED8', '#DBEAFE', '#93C5FD'],
-  chemicals: ['#10B981', '#059669', '#047857', '#D1FAE5', '#6EE7B7'],
-  plastics: ['#F97316', '#EA580C', '#C2410C', '#FFEDD5', '#FED7AA'],
-  packaging: ['#8B5CF6', '#7C3AED', '#6D28D9', '#EDE9FE', '#DDD6FE']
+  electronics: ['#ea384c', '#8B5CF6', '#D946EF', '#0EA5E9'],
+  metals: ['#ea384c', '#8B5CF6', '#D946EF', '#0EA5E9'],
+  chemicals: ['#ea384c', '#8B5CF6', '#D946EF', '#0EA5E9'],
+  plastics: ['#ea384c', '#8B5CF6', '#D946EF', '#0EA5E9'],
+  packaging: ['#ea384c', '#8B5CF6', '#D946EF', '#0EA5E9']
 };
 
 const generatePieColors = (category: Category) => {
@@ -119,6 +120,13 @@ const Inventory = () => {
     };
     setCategories([...categories, newCategory]);
     setNewCategoryName('');
+  };
+
+  const handleDeleteCategory = (categoryId: string) => {
+    setCategories(categories.filter(cat => cat.id !== categoryId));
+    if (selectedCategory?.id === categoryId) {
+      setSelectedCategory(null);
+    }
   };
 
   const handleAddMaterial = () => {
@@ -230,7 +238,17 @@ const Inventory = () => {
         <div className="grid grid-cols-1 gap-6">
           {categories.map(category => (
             <Card key={category.id} className="p-6 bg-white shadow-lg">
-              <h3 className="text-xl font-semibold mb-4 text-inventory-primary">{category.name}</h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-semibold text-inventory-primary">{category.name}</h3>
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={() => handleDeleteCategory(category.id)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Category
+                </Button>
+              </div>
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="overflow-x-auto">
