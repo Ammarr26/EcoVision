@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
@@ -33,6 +32,22 @@ interface Category {
   materials: Material[];
   color: string;
 }
+
+const colorPalettes = {
+  electronics: ['#9b87f5', '#7E69AB', '#6E59A5', '#E5DEFF', '#D6BCFA'],
+  metals: ['#3B82F6', '#2563EB', '#1D4ED8', '#DBEAFE', '#93C5FD'],
+  chemicals: ['#10B981', '#059669', '#047857', '#D1FAE5', '#6EE7B7'],
+  plastics: ['#F97316', '#EA580C', '#C2410C', '#FFEDD5', '#FED7AA'],
+  packaging: ['#8B5CF6', '#7C3AED', '#6D28D9', '#EDE9FE', '#DDD6FE']
+};
+
+const generatePieColors = (category: Category) => {
+  const categoryType = Object.keys(colorPalettes).find(type => 
+    category.name.toLowerCase().includes(type)
+  ) || 'electronics';
+  
+  return colorPalettes[categoryType as keyof typeof colorPalettes];
+};
 
 const mockCategories: Category[] = [
   {
@@ -253,12 +268,15 @@ const Inventory = () => {
                         dataKey="value"
                         label={({ name, value }) => `${name}: ${value}`}
                       >
-                        {getPieChartData(category).map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={`${category.color}${(index + 5) * 20}`} 
-                          />
-                        ))}
+                        {getPieChartData(category).map((entry, index) => {
+                          const colors = generatePieColors(category);
+                          return (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={colors[index % colors.length]}
+                            />
+                          );
+                        })}
                       </Pie>
                       <Tooltip />
                     </PieChart>
