@@ -1,14 +1,14 @@
-import React, { useState, useRef, Suspense } from 'react';
+
+import React, { useState } from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
 import { LineChart, TrendingUp, Box, Activity, Bell, Star, ChevronDown } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, BarChart, Bar, ScatterChart, Scatter, ZAxis
+  ResponsiveContainer, BarChart, Bar, ScatterChart, Scatter, ZAxis,
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
 
 // Mock data for market sentiment constellation
@@ -29,19 +29,15 @@ const competitorData = [
   { name: 'Competitor B', pricing: 92, stockouts: 3, leadTime: 1.5 },
 ];
 
-// Simple cube for 3D visualization
-function Scene() {
-  return (
-    <group>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} />
-      <mesh rotation={[0, Math.PI / 4, 0]}>
-        <boxGeometry args={[2, 2, 2]} />
-        <meshStandardMaterial color="#7E69AB" transparent opacity={0.7} wireframe />
-      </mesh>
-    </group>
-  );
-}
+// Market metrics data for radar chart (replacing 3D visualization)
+const marketMetrics = [
+  { subject: 'Market Share', A: 120, B: 110, fullMark: 150 },
+  { subject: 'Growth Rate', A: 98, B: 130, fullMark: 150 },
+  { subject: 'Customer Satisfaction', A: 86, B: 130, fullMark: 150 },
+  { subject: 'Innovation', A: 99, B: 100, fullMark: 150 },
+  { subject: 'Brand Value', A: 85, B: 90, fullMark: 150 },
+  { subject: 'Market Reach', A: 65, B: 85, fullMark: 150 },
+];
 
 const Analytics = () => {
   const [selectedCategory, setSelectedCategory] = useState('Electronics');
@@ -91,20 +87,38 @@ const Analytics = () => {
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* 3D Data Cube */}
+          {/* Market Analysis Radar (replacing 3D visualization) */}
           <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
-            <h3 className="text-xl font-semibold mb-4">3D Market Analysis</h3>
+            <h3 className="text-xl font-semibold mb-4">Market Analysis Matrix</h3>
             <div className="h-[400px] rounded-lg overflow-hidden">
-              <Canvas>
-                <Suspense fallback={null}>
-                  <Scene />
-                  <OrbitControls 
-                    enablePan={false}
-                    enableZoom={true}
-                    enableRotate={true}
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart outerRadius={120} data={marketMetrics}>
+                  <PolarGrid stroke="#666" />
+                  <PolarAngleAxis dataKey="subject" stroke="#fff" />
+                  <PolarRadiusAxis stroke="#fff" />
+                  <Radar 
+                    name="Your Company"
+                    dataKey="A"
+                    stroke="#7E69AB"
+                    fill="#7E69AB"
+                    fillOpacity={0.6}
                   />
-                </Suspense>
-              </Canvas>
+                  <Radar
+                    name="Industry Average"
+                    dataKey="B"
+                    stroke="#82ca9d"
+                    fill="#82ca9d"
+                    fillOpacity={0.6}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(0,0,0,0.8)', 
+                      border: '1px solid rgba(147, 51, 234, 0.2)',
+                      borderRadius: '0.5rem'
+                    }}
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
             </div>
           </Card>
 
@@ -115,11 +129,16 @@ const Analytics = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <ScatterChart>
                   <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                  <XAxis type="number" dataKey="x" name="Market Share" />
-                  <YAxis type="number" dataKey="y" name="Growth" />
+                  <XAxis type="number" dataKey="x" name="Market Share" stroke="#fff" />
+                  <YAxis type="number" dataKey="y" name="Growth" stroke="#fff" />
                   <ZAxis type="number" dataKey="z" range={[50, 400]} />
                   <Tooltip 
                     cursor={{ strokeDasharray: '3 3' }}
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(0,0,0,0.8)', 
+                      border: '1px solid rgba(147, 51, 234, 0.2)',
+                      borderRadius: '0.5rem'
+                    }}
                     content={({ payload }) => {
                       if (payload && payload[0]) {
                         const data = payload[0].payload;
@@ -146,7 +165,7 @@ const Analytics = () => {
           </Card>
         </div>
 
-        {/* Competitor X-Ray and Real-Time Alerts sections */}
+        {/* Competitor X-Ray */}
         <Card className="p-6 bg-black/40 backdrop-blur-xl border border-purple-500/20">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold">Competitor X-Ray Analysis</h3>
