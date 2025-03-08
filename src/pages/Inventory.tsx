@@ -428,10 +428,10 @@ const Inventory = () => {
           ))}
         </div>
 
-        {/* Main Content Grid */}
+        {/* Main Content Grid - Modified to make heights match */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Left Column - Category & Material Forms */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6 flex flex-col">
             <Card className="p-5 backdrop-blur-sm bg-white shadow-md">
               <h3 className="text-md font-semibold mb-3 text-inventory-primary">Add New Category</h3>
               <div className="flex gap-2">
@@ -448,7 +448,7 @@ const Inventory = () => {
               </div>
             </Card>
 
-            <Card className="p-5 backdrop-blur-sm bg-white shadow-md">
+            <Card className="p-5 backdrop-blur-sm bg-white shadow-md flex-1">
               <h3 className="text-md font-semibold mb-3 text-inventory-primary">Add New Material</h3>
               <div className="space-y-3">
                 <select
@@ -508,9 +508,9 @@ const Inventory = () => {
             </Card>
           </div>
 
-          {/* Right Column - Inventory Items */}
-          <div className="lg:col-span-3">
-            <Card className="p-5 backdrop-blur-sm bg-white shadow-md">
+          {/* Right Column - Inventory Items - Modified to match height */}
+          <div className="lg:col-span-3 flex flex-col">
+            <Card className="p-5 backdrop-blur-sm bg-white shadow-md flex-1 flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-inventory-primary">Inventory Items</h3>
                 {filteredCategories.length === 0 && searchTerm && (
@@ -520,195 +520,197 @@ const Inventory = () => {
                 )}
               </div>
               
-              {filteredCategories.length === 0 ? (
-                <div className="text-center py-8 text-secondary">
-                  {searchTerm ? "No items match your search criteria." : "No categories available. Add your first category above."}
-                </div>
-              ) : (
-                filteredCategories.map(category => (
-                  <div key={category.id} className="mb-6 last:mb-0">
-                    <div className="flex justify-between items-center mb-3">
-                      {editingCategoryId === category.id ? (
-                        <div className="flex items-center gap-2">
-                          <Input
-                            value={editValue}
-                            onChange={(e) => setEditValue(e.target.value)}
-                            className="w-48 text-sm"
-                          />
-                          <Button
-                            size="sm"
-                            className="text-green-600 h-8 w-8 p-0"
-                            variant="ghost"
-                            onClick={() => saveEditedCategory(category.id)}
-                          >
-                            <Check className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="text-red-600 h-8 w-8 p-0"
-                            variant="ghost"
-                            onClick={() => setEditingCategoryId(null)}
-                          >
-                            <X className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-md font-semibold text-inventory-primary">{category.name}</h3>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => handleEditCategory(category.id, category.name)}
-                          >
-                            <Edit2 className="w-3.5 h-3.5" />
-                          </Button>
-                        </div>
-                      )}
-                      <Button 
-                        variant="destructive" 
-                        size="sm"
-                        className="h-8 text-xs"
-                        onClick={() => handleDeleteCategory(category.id)}
-                      >
-                        <Trash2 className="w-3.5 h-3.5 mr-1" />
-                        Delete
-                      </Button>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                      <div className="overflow-x-auto bg-gray-50 rounded-lg p-2">
-                        <table className="min-w-full rounded-lg text-sm">
-                          <thead className="bg-gray-100">
-                            <tr>
-                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Material</th>
-                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
-                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-200">
-                            {category.materials.map(material => {
-                              const daysUntilExpiry = getDaysUntilExpiry(material.expiryDate);
-                              const isExpired = daysUntilExpiry !== null && daysUntilExpiry < 0;
-                              const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
-                              
-                              return (
-                                <tr key={material.id} className="hover:bg-gray-100 transition-colors">
-                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
-                                    {editingMaterialId === material.id ? (
-                                      <div className="flex items-center gap-1">
-                                        <Input
-                                          value={editValue}
-                                          onChange={(e) => setEditValue(e.target.value)}
-                                          className="w-28 h-7 text-xs"
-                                        />
-                                        <Button
-                                          size="sm"
-                                          className="text-green-600 h-7 w-7 p-0"
-                                          variant="ghost"
-                                          onClick={() => saveEditedMaterial(category.id, material.id)}
-                                        >
-                                          <Check className="w-3.5 h-3.5" />
-                                        </Button>
-                                        <Button
-                                          size="sm"
-                                          className="text-red-600 h-7 w-7 p-0"
-                                          variant="ghost"
-                                          onClick={() => setEditingMaterialId(null)}
-                                        >
-                                          <X className="w-3.5 h-3.5" />
-                                        </Button>
-                                      </div>
-                                    ) : (
-                                      <div>
-                                        <div className="font-medium flex items-center">
-                                          {material.name}
+              <div className="flex-1 overflow-auto">
+                {filteredCategories.length === 0 ? (
+                  <div className="text-center py-8 text-secondary">
+                    {searchTerm ? "No items match your search criteria." : "No categories available. Add your first category above."}
+                  </div>
+                ) : (
+                  filteredCategories.map(category => (
+                    <div key={category.id} className="mb-6 last:mb-0">
+                      <div className="flex justify-between items-center mb-3">
+                        {editingCategoryId === category.id ? (
+                          <div className="flex items-center gap-2">
+                            <Input
+                              value={editValue}
+                              onChange={(e) => setEditValue(e.target.value)}
+                              className="w-48 text-sm"
+                            />
+                            <Button
+                              size="sm"
+                              className="text-green-600 h-8 w-8 p-0"
+                              variant="ghost"
+                              onClick={() => saveEditedCategory(category.id)}
+                            >
+                              <Check className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="text-red-600 h-8 w-8 p-0"
+                              variant="ghost"
+                              onClick={() => setEditingCategoryId(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-md font-semibold text-inventory-primary">{category.name}</h3>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleEditCategory(category.id, category.name)}
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </div>
+                        )}
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          className="h-8 text-xs"
+                          onClick={() => handleDeleteCategory(category.id)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5 mr-1" />
+                          Delete
+                        </Button>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div className="overflow-x-auto bg-gray-50 rounded-lg p-2">
+                          <table className="min-w-full rounded-lg text-sm">
+                            <thead className="bg-gray-100">
+                              <tr>
+                                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Material</th>
+                                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
+                                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
+                                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                              {category.materials.map(material => {
+                                const daysUntilExpiry = getDaysUntilExpiry(material.expiryDate);
+                                const isExpired = daysUntilExpiry !== null && daysUntilExpiry < 0;
+                                const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
+                                
+                                return (
+                                  <tr key={material.id} className="hover:bg-gray-100 transition-colors">
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                      {editingMaterialId === material.id ? (
+                                        <div className="flex items-center gap-1">
+                                          <Input
+                                            value={editValue}
+                                            onChange={(e) => setEditValue(e.target.value)}
+                                            className="w-28 h-7 text-xs"
+                                          />
                                           <Button
-                                            variant="ghost"
                                             size="sm"
-                                            className="h-6 w-6 p-0 ml-1"
-                                            onClick={() => handleEditMaterial(material.id, material.name)}
+                                            className="text-green-600 h-7 w-7 p-0"
+                                            variant="ghost"
+                                            onClick={() => saveEditedMaterial(category.id, material.id)}
                                           >
-                                            <Edit2 className="w-3 h-3" />
+                                            <Check className="w-3.5 h-3.5" />
+                                          </Button>
+                                          <Button
+                                            size="sm"
+                                            className="text-red-600 h-7 w-7 p-0"
+                                            variant="ghost"
+                                            onClick={() => setEditingMaterialId(null)}
+                                          >
+                                            <X className="w-3.5 h-3.5" />
                                           </Button>
                                         </div>
-                                        <div className="text-xs text-gray-500 mt-0.5 space-x-1">
-                                          {material.location && <span>Location: {material.location}</span>}
-                                          {material.supplier && <span>• Supplier: {material.supplier}</span>}
-                                        </div>
-                                        {material.expiryDate && (
-                                          <div className={`text-xs mt-0.5 ${
-                                            isExpired ? 'text-red-600' : 
-                                            isExpiringSoon ? 'text-amber-600' : 
-                                            'text-gray-500'
-                                          }`}>
-                                            {isExpired ? 'Expired' : 'Expires'}: {new Date(material.expiryDate).toLocaleDateString()}
+                                      ) : (
+                                        <div>
+                                          <div className="font-medium flex items-center">
+                                            {material.name}
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              className="h-6 w-6 p-0 ml-1"
+                                              onClick={() => handleEditMaterial(material.id, material.name)}
+                                            >
+                                              <Edit2 className="w-3 h-3" />
+                                            </Button>
                                           </div>
-                                        )}
-                                      </div>
-                                    )}
-                                  </td>
-                                  <td className="px-3 py-2 whitespace-nowrap text-sm">
-                                    {material.quantity <= material.minRequired ? (
-                                      <span className="text-red-500 font-medium">{material.quantity}</span>
-                                    ) : (
-                                      material.quantity
-                                    )}
-                                  </td>
-                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{material.unit}</td>
-                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
-                                    <Button
-                                      variant="ghost" 
-                                      size="sm"
-                                      className="text-red-500 h-7 w-7 p-0"
-                                      onClick={() => handleDeleteMaterial(category.id, material.id)}
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </Button>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-
-                      <div className="h-[200px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie
-                              data={getPieChartData(category)}
-                              cx="50%"
-                              cy="50%"
-                              outerRadius={80}
-                              fill={category.color}
-                              dataKey="value"
-                              label={({ name, value }) => `${name}: ${value}`}
-                            >
-                              {getPieChartData(category).map((entry, index) => {
-                                const colors = generatePieColors(category);
-                                return (
-                                  <Cell 
-                                    key={`cell-${index}`} 
-                                    fill={colors[index % colors.length]}
-                                  />
+                                          <div className="text-xs text-gray-500 mt-0.5 space-x-1">
+                                            {material.location && <span>Location: {material.location}</span>}
+                                            {material.supplier && <span>• Supplier: {material.supplier}</span>}
+                                          </div>
+                                          {material.expiryDate && (
+                                            <div className={`text-xs mt-0.5 ${
+                                              isExpired ? 'text-red-600' : 
+                                              isExpiringSoon ? 'text-amber-600' : 
+                                              'text-gray-500'
+                                            }`}>
+                                              {isExpired ? 'Expired' : 'Expires'}: {new Date(material.expiryDate).toLocaleDateString()}
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+                                    </td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm">
+                                      {material.quantity <= material.minRequired ? (
+                                        <span className="text-red-500 font-medium">{material.quantity}</span>
+                                      ) : (
+                                        material.quantity
+                                      )}
+                                    </td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{material.unit}</td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                      <Button
+                                        variant="ghost" 
+                                        size="sm"
+                                        className="text-red-500 h-7 w-7 p-0"
+                                        onClick={() => handleDeleteMaterial(category.id, material.id)}
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </Button>
+                                    </td>
+                                  </tr>
                                 );
                               })}
-                            </Pie>
-                            <Tooltip />
-                          </PieChart>
-                        </ResponsiveContainer>
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <div className="h-[200px]">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie
+                                data={getPieChartData(category)}
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={80}
+                                fill={category.color}
+                                dataKey="value"
+                                label={({ name, value }) => `${name}: ${value}`}
+                              >
+                                {getPieChartData(category).map((entry, index) => {
+                                  const colors = generatePieColors(category);
+                                  return (
+                                    <Cell 
+                                      key={`cell-${index}`} 
+                                      fill={colors[index % colors.length]}
+                                    />
+                                  );
+                                })}
+                              </Pie>
+                              <Tooltip />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
-              )}
+                  ))
+                )}
+              </div>
             </Card>
           </div>
         </div>
 
-        {/* Expiry Tracking Section (Moved to the bottom) */}
+        {/* Expiry Tracking Section (At the bottom) */}
         {(expiringMaterials.length > 0 || expiredMaterials.length > 0) && (
           <Card className="p-5 backdrop-blur-sm bg-white shadow-md">
             <div className="flex items-center justify-between mb-3">
