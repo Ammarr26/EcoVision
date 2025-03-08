@@ -67,6 +67,7 @@ const generatePieColors = (category: Category) => {
   return colorPalettes[categoryType as keyof typeof colorPalettes];
 };
 
+// Starting with just the Electronics category to save space
 const mockCategories: Category[] = [
   {
     id: '1',
@@ -77,25 +78,7 @@ const mockCategories: Category[] = [
       { id: '1-2', name: 'Circuit Boards', quantity: 300, minRequired: 50, unit: 'pcs', expiryDate: '2024-08-15', location: 'Shelf A2', supplier: 'CircuitPro LLC' },
       { id: '1-3', name: 'Transistors', quantity: 800, minRequired: 200, unit: 'pcs', expiryDate: '2023-10-30', location: 'Drawer B3', supplier: 'Techtronic Inc.' },
     ]
-  },
-  {
-    id: '2',
-    name: 'Metal Parts',
-    color: '#10B981',
-    materials: [
-      { id: '2-1', name: 'Steel Sheets', quantity: 1000, minRequired: 200, unit: 'kg', location: 'Rack C1', supplier: 'MetalWorks Co.' },
-      { id: '2-2', name: 'Aluminum Rods', quantity: 800, minRequired: 150, unit: 'kg', expiryDate: '2024-11-20', location: 'Rack C2', supplier: 'AlumaTech' },
-    ]
-  },
-  {
-    id: '3',
-    name: 'Chemicals',
-    color: '#F97316',
-    materials: [
-      { id: '3-1', name: 'Cleaning Solvent', quantity: 200, minRequired: 50, unit: 'L', expiryDate: '2023-09-15', location: 'Cabinet D1', supplier: 'ChemCorp' },
-      { id: '3-2', name: 'Adhesive', quantity: 150, minRequired: 30, unit: 'L', expiryDate: '2023-10-05', location: 'Cabinet D2', supplier: 'StickFast Inc.' },
-    ]
-  },
+  }
 ];
 
 const Inventory = () => {
@@ -118,22 +101,33 @@ const Inventory = () => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const { toast } = useToast();
 
+  // Calculate total inventory count
+  const totalInventoryCount = categories.reduce((acc, category) => {
+    return acc + category.materials.reduce((sum, material) => sum + material.quantity, 0);
+  }, 0);
+
+  // Calculate total number of materials
+  const totalMaterialsCount = categories.reduce((acc, category) => acc + category.materials.length, 0);
+  
+  // Calculate total categories
+  const totalCategoriesCount = categories.length;
+
   const stats = [
     { 
-      title: "Total Categories", 
-      value: categories.length.toString(), 
+      title: "Total Items", 
+      value: totalInventoryCount.toString(), 
       icon: <Package className="w-5 h-5" />, 
-      trend: { value: 2, positive: true } 
+      trend: { value: 12, positive: true } 
     },
     { 
-      title: "Total Materials", 
-      value: categories.reduce((acc, cat) => acc + cat.materials.length, 0).toString(), 
+      title: "Materials Types", 
+      value: totalMaterialsCount.toString(), 
       icon: <PackageOpen className="w-5 h-5" />, 
       trend: { value: 5, positive: true } 
     },
     { 
-      title: "Stock Value", 
-      value: "$123,456", 
+      title: "Categories", 
+      value: totalCategoriesCount.toString(), 
       icon: <Truck className="w-5 h-5" />, 
       trend: { value: 8, positive: true } 
     },
@@ -382,60 +376,379 @@ const Inventory = () => {
 
   return (
     <Layout>
-      <div className="space-y-8 bg-inventory-background min-h-screen">
-        <div className="bg-gradient-to-br from-inventory-primary/20 via-inventory-accent to-inventory-background p-8 rounded-2xl">
-          <h1 className="text-3xl font-semibold text-inventory-primary">Inventory Management</h1>
-          <p className="text-secondary mt-2">Track and manage your inventory levels</p>
+      <div className="space-y-6 bg-inventory-background min-h-screen">
+        {/* Header */}
+        <div className="bg-gradient-to-br from-inventory-primary/20 via-inventory-accent to-inventory-background p-6 rounded-xl">
+          <h1 className="text-2xl font-semibold text-inventory-primary">Inventory Management</h1>
+          <p className="text-secondary mt-1">Track and manage your inventory items efficiently</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Search and Filter Bar */}
+        <Card className="p-4 backdrop-blur-sm bg-white shadow-md">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="relative w-full md:w-auto flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search materials, suppliers, locations..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 pr-4 py-2 w-full"
+              />
+            </div>
+            <div className="flex gap-2 w-full md:w-auto">
+              <Button 
+                variant={filterExpiring ? "default" : "outline"}
+                size="sm" 
+                onClick={() => setFilterExpiring(!filterExpiring)}
+                className="flex items-center whitespace-nowrap"
+              >
+                <FilterIcon className="w-4 h-4 mr-1" />
+                {filterExpiring ? "Show All" : "Show Expiring Only"}
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setSearchTerm('')}
+                variant="outline"
+                className="whitespace-nowrap"
+              >
+                Clear Filters
+              </Button>
+            </div>
+          </div>
+        </Card>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {stats.map((stat) => (
             <StatsCard 
               key={stat.title} 
               {...stat} 
-              className="border-none shadow-lg hover:shadow-xl transition-shadow bg-white"
+              className="border-none shadow-md hover:shadow-lg transition-shadow bg-white"
             />
           ))}
         </div>
 
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          {/* Left Column - Category & Material Forms */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="p-5 backdrop-blur-sm bg-white shadow-md">
+              <h3 className="text-md font-semibold mb-3 text-inventory-primary">Add New Category</h3>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Category Name"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  className="flex-1"
+                />
+                <Button onClick={handleAddCategory} size="sm">
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add
+                </Button>
+              </div>
+            </Card>
+
+            <Card className="p-5 backdrop-blur-sm bg-white shadow-md">
+              <h3 className="text-md font-semibold mb-3 text-inventory-primary">Add New Material</h3>
+              <div className="space-y-3">
+                <select
+                  className="w-full border rounded-md p-2 text-sm"
+                  onChange={(e) => setSelectedCategory(categories.find(c => c.id === e.target.value) || null)}
+                  value={selectedCategory?.id || ''}
+                >
+                  <option value="">Select Category</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    placeholder="Material Name"
+                    value={newMaterial.name}
+                    onChange={(e) => setNewMaterial({...newMaterial, name: e.target.value})}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Quantity"
+                    value={newMaterial.quantity}
+                    onChange={(e) => setNewMaterial({...newMaterial, quantity: e.target.value})}
+                  />
+                  <Input
+                    placeholder="Unit (e.g., pcs, kg)"
+                    value={newMaterial.unit}
+                    onChange={(e) => setNewMaterial({...newMaterial, unit: e.target.value})}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Minimum Required"
+                    value={newMaterial.minRequired}
+                    onChange={(e) => setNewMaterial({...newMaterial, minRequired: e.target.value})}
+                  />
+                  <Input
+                    type="date"
+                    placeholder="Expiry Date"
+                    value={newMaterial.expiryDate}
+                    onChange={(e) => setNewMaterial({...newMaterial, expiryDate: e.target.value})}
+                  />
+                  <Input
+                    placeholder="Storage Location"
+                    value={newMaterial.location}
+                    onChange={(e) => setNewMaterial({...newMaterial, location: e.target.value})}
+                  />
+                  <div className="col-span-2">
+                    <Input
+                      placeholder="Supplier"
+                      value={newMaterial.supplier}
+                      onChange={(e) => setNewMaterial({...newMaterial, supplier: e.target.value})}
+                    />
+                  </div>
+                </div>
+                <Button onClick={handleAddMaterial} className="w-full" size="sm">Add Material</Button>
+              </div>
+            </Card>
+          </div>
+
+          {/* Right Column - Inventory Items */}
+          <div className="lg:col-span-3">
+            <Card className="p-5 backdrop-blur-sm bg-white shadow-md">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-inventory-primary">Inventory Items</h3>
+                {filteredCategories.length === 0 && searchTerm && (
+                  <div className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">
+                    No results for "{searchTerm}" - try another search
+                  </div>
+                )}
+              </div>
+              
+              {filteredCategories.length === 0 ? (
+                <div className="text-center py-8 text-secondary">
+                  {searchTerm ? "No items match your search criteria." : "No categories available. Add your first category above."}
+                </div>
+              ) : (
+                filteredCategories.map(category => (
+                  <div key={category.id} className="mb-6 last:mb-0">
+                    <div className="flex justify-between items-center mb-3">
+                      {editingCategoryId === category.id ? (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            className="w-48 text-sm"
+                          />
+                          <Button
+                            size="sm"
+                            className="text-green-600 h-8 w-8 p-0"
+                            variant="ghost"
+                            onClick={() => saveEditedCategory(category.id)}
+                          >
+                            <Check className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="text-red-600 h-8 w-8 p-0"
+                            variant="ghost"
+                            onClick={() => setEditingCategoryId(null)}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-md font-semibold text-inventory-primary">{category.name}</h3>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => handleEditCategory(category.id, category.name)}
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      )}
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        className="h-8 text-xs"
+                        onClick={() => handleDeleteCategory(category.id)}
+                      >
+                        <Trash2 className="w-3.5 h-3.5 mr-1" />
+                        Delete
+                      </Button>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div className="overflow-x-auto bg-gray-50 rounded-lg p-2">
+                        <table className="min-w-full rounded-lg text-sm">
+                          <thead className="bg-gray-100">
+                            <tr>
+                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Material</th>
+                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
+                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
+                              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200">
+                            {category.materials.map(material => {
+                              const daysUntilExpiry = getDaysUntilExpiry(material.expiryDate);
+                              const isExpired = daysUntilExpiry !== null && daysUntilExpiry < 0;
+                              const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
+                              
+                              return (
+                                <tr key={material.id} className="hover:bg-gray-100 transition-colors">
+                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                    {editingMaterialId === material.id ? (
+                                      <div className="flex items-center gap-1">
+                                        <Input
+                                          value={editValue}
+                                          onChange={(e) => setEditValue(e.target.value)}
+                                          className="w-28 h-7 text-xs"
+                                        />
+                                        <Button
+                                          size="sm"
+                                          className="text-green-600 h-7 w-7 p-0"
+                                          variant="ghost"
+                                          onClick={() => saveEditedMaterial(category.id, material.id)}
+                                        >
+                                          <Check className="w-3.5 h-3.5" />
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          className="text-red-600 h-7 w-7 p-0"
+                                          variant="ghost"
+                                          onClick={() => setEditingMaterialId(null)}
+                                        >
+                                          <X className="w-3.5 h-3.5" />
+                                        </Button>
+                                      </div>
+                                    ) : (
+                                      <div>
+                                        <div className="font-medium flex items-center">
+                                          {material.name}
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-6 w-6 p-0 ml-1"
+                                            onClick={() => handleEditMaterial(material.id, material.name)}
+                                          >
+                                            <Edit2 className="w-3 h-3" />
+                                          </Button>
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-0.5 space-x-1">
+                                          {material.location && <span>Location: {material.location}</span>}
+                                          {material.supplier && <span>• Supplier: {material.supplier}</span>}
+                                        </div>
+                                        {material.expiryDate && (
+                                          <div className={`text-xs mt-0.5 ${
+                                            isExpired ? 'text-red-600' : 
+                                            isExpiringSoon ? 'text-amber-600' : 
+                                            'text-gray-500'
+                                          }`}>
+                                            {isExpired ? 'Expired' : 'Expires'}: {new Date(material.expiryDate).toLocaleDateString()}
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </td>
+                                  <td className="px-3 py-2 whitespace-nowrap text-sm">
+                                    {material.quantity <= material.minRequired ? (
+                                      <span className="text-red-500 font-medium">{material.quantity}</span>
+                                    ) : (
+                                      material.quantity
+                                    )}
+                                  </td>
+                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{material.unit}</td>
+                                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                    <Button
+                                      variant="ghost" 
+                                      size="sm"
+                                      className="text-red-500 h-7 w-7 p-0"
+                                      onClick={() => handleDeleteMaterial(category.id, material.id)}
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </Button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div className="h-[200px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={getPieChartData(category)}
+                              cx="50%"
+                              cy="50%"
+                              outerRadius={80}
+                              fill={category.color}
+                              dataKey="value"
+                              label={({ name, value }) => `${name}: ${value}`}
+                            >
+                              {getPieChartData(category).map((entry, index) => {
+                                const colors = generatePieColors(category);
+                                return (
+                                  <Cell 
+                                    key={`cell-${index}`} 
+                                    fill={colors[index % colors.length]}
+                                  />
+                                );
+                              })}
+                            </Pie>
+                            <Tooltip />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </Card>
+          </div>
+        </div>
+
+        {/* Expiry Tracking Section (Moved to the bottom) */}
         {(expiringMaterials.length > 0 || expiredMaterials.length > 0) && (
-          <Card className="p-6 backdrop-blur-sm bg-white shadow-lg border-l-4 border-l-amber-500">
-            <div className="flex items-center justify-between mb-4">
+          <Card className="p-5 backdrop-blur-sm bg-white shadow-md">
+            <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-semibold text-inventory-primary flex items-center">
                 <Clock className="w-5 h-5 mr-2 text-amber-500" />
-                Materials Expiring Soon
+                Materials Expiry Tracker
               </h3>
-              <span className="text-xs text-secondary bg-amber-100 px-2 py-1 rounded-full">
+              <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
                 {expiringMaterials.length} expiring soon • {expiredMaterials.length} expired
               </span>
             </div>
             
-            <div className="space-y-6">
+            <div className="space-y-4">
               {expiringMaterials.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium text-secondary mb-2">Expiring Soon</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {expiringMaterials.slice(0, 4).map(({ material, category, daysLeft }) => (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {expiringMaterials.slice(0, 3).map(({ material, category, daysLeft }) => (
                       <div key={material.id} className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-                        <div className="flex justify-between">
+                        <div className="flex justify-between items-start">
                           <span className="font-medium">{material.name}</span>
-                          <span className="text-amber-600 text-sm">{daysLeft} days left</span>
+                          <span className="text-amber-600 text-xs bg-amber-100 px-1.5 py-0.5 rounded-full">
+                            {daysLeft} days left
+                          </span>
                         </div>
                         <div className="text-sm text-secondary mt-1">
                           Category: {category} • Qty: {material.quantity} {material.unit}
                         </div>
                         <div className="mt-2 text-xs italic text-amber-700">
                           {daysLeft <= 7 
-                            ? "Use in production immediately or consider discounting."
-                            : "Plan to use in upcoming production cycles."}
+                            ? "Urgent: Use in production or discount."
+                            : "Plan to use in upcoming production."}
                         </div>
                       </div>
                     ))}
                   </div>
-                  {expiringMaterials.length > 4 && (
+                  {expiringMaterials.length > 3 && (
                     <div className="text-right mt-2">
                       <Button variant="link" size="sm" className="text-amber-600">
-                        View all {expiringMaterials.length} expiring items
+                        View all {expiringMaterials.length} expiring items →
                       </Button>
                     </div>
                   )}
@@ -448,26 +761,28 @@ const Inventory = () => {
                     <AlertTriangle className="w-4 h-4 mr-1" />
                     Expired Materials
                   </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {expiredMaterials.slice(0, 2).map(({ material, category, daysOverdue }) => (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {expiredMaterials.slice(0, 3).map(({ material, category, daysOverdue }) => (
                       <div key={material.id} className="p-3 bg-red-50 rounded-lg border border-red-200">
-                        <div className="flex justify-between">
+                        <div className="flex justify-between items-start">
                           <span className="font-medium">{material.name}</span>
-                          <span className="text-destructive text-sm">Expired {daysOverdue} days ago</span>
+                          <span className="text-destructive text-xs bg-red-100 px-1.5 py-0.5 rounded-full">
+                            {daysOverdue} days ago
+                          </span>
                         </div>
                         <div className="text-sm text-secondary mt-1">
                           Category: {category} • Qty: {material.quantity} {material.unit}
                         </div>
                         <div className="mt-2 text-xs italic text-destructive">
-                          Review for disposal or special handling according to company policy.
+                          Review for disposal per company policy.
                         </div>
                       </div>
                     ))}
                   </div>
-                  {expiredMaterials.length > 2 && (
+                  {expiredMaterials.length > 3 && (
                     <div className="text-right mt-2">
                       <Button variant="link" size="sm" className="text-destructive">
-                        View all {expiredMaterials.length} expired items
+                        View all {expiredMaterials.length} expired items →
                       </Button>
                     </div>
                   )}
@@ -476,308 +791,6 @@ const Inventory = () => {
             </div>
           </Card>
         )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
-            <h3 className="text-lg font-semibold mb-4 text-inventory-primary">Add New Category</h3>
-            <div className="flex gap-4">
-              <Input
-                placeholder="Category Name"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-              />
-              <Button onClick={handleAddCategory}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Category
-              </Button>
-            </div>
-          </Card>
-
-          <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
-            <h3 className="text-lg font-semibold mb-4 text-inventory-primary">Add New Material</h3>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <select
-                  className="border rounded-md p-2"
-                  onChange={(e) => setSelectedCategory(categories.find(c => c.id === e.target.value) || null)}
-                  value={selectedCategory?.id || ''}
-                >
-                  <option value="">Select Category</option>
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-                <Input
-                  placeholder="Material Name"
-                  value={newMaterial.name}
-                  onChange={(e) => setNewMaterial({...newMaterial, name: e.target.value})}
-                />
-                <Input
-                  type="number"
-                  placeholder="Quantity"
-                  value={newMaterial.quantity}
-                  onChange={(e) => setNewMaterial({...newMaterial, quantity: e.target.value})}
-                />
-                <Input
-                  placeholder="Unit (e.g., pcs, kg)"
-                  value={newMaterial.unit}
-                  onChange={(e) => setNewMaterial({...newMaterial, unit: e.target.value})}
-                />
-                <Input
-                  type="number"
-                  placeholder="Minimum Required"
-                  value={newMaterial.minRequired}
-                  onChange={(e) => setNewMaterial({...newMaterial, minRequired: e.target.value})}
-                />
-                <Input
-                  type="date"
-                  placeholder="Expiry Date (if applicable)"
-                  value={newMaterial.expiryDate}
-                  onChange={(e) => setNewMaterial({...newMaterial, expiryDate: e.target.value})}
-                />
-                <Input
-                  placeholder="Storage Location"
-                  value={newMaterial.location}
-                  onChange={(e) => setNewMaterial({...newMaterial, location: e.target.value})}
-                />
-                <Input
-                  placeholder="Supplier"
-                  value={newMaterial.supplier}
-                  onChange={(e) => setNewMaterial({...newMaterial, supplier: e.target.value})}
-                />
-              </div>
-              <Button onClick={handleAddMaterial} className="w-full">Add Material</Button>
-            </div>
-          </Card>
-        </div>
-
-        <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-            <h3 className="text-xl font-semibold text-inventory-primary">Inventory Items</h3>
-            <div className="flex flex-col md:flex-row gap-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search materials..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 w-full md:w-60"
-                />
-              </div>
-              <Button 
-                variant={filterExpiring ? "default" : "outline"}
-                size="sm" 
-                onClick={() => setFilterExpiring(!filterExpiring)}
-                className="flex items-center"
-              >
-                <FilterIcon className="w-4 h-4 mr-1" />
-                {filterExpiring ? "Show All" : "Show Expiring Only"}
-              </Button>
-            </div>
-          </div>
-          
-          {filteredCategories.length === 0 ? (
-            <div className="text-center py-8 text-secondary">
-              No items match your search criteria.
-            </div>
-          ) : (
-            filteredCategories.map(category => (
-              <div key={category.id} className="mb-8 last:mb-0">
-                <div className="flex justify-between items-center mb-4">
-                  {editingCategoryId === category.id ? (
-                    <div className="flex items-center gap-2">
-                      <Input
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        className="w-48"
-                      />
-                      <Button
-                        size="sm"
-                        className="text-green-600"
-                        variant="ghost"
-                        onClick={() => saveEditedCategory(category.id)}
-                      >
-                        <Check className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="text-red-600"
-                        variant="ghost"
-                        onClick={() => setEditingCategoryId(null)}
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-xl font-semibold text-inventory-primary">{category.name}</h3>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditCategory(category.id, category.name)}
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  )}
-                  <Button 
-                    variant="destructive" 
-                    size="sm"
-                    onClick={() => handleDeleteCategory(category.id)}
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete Category
-                  </Button>
-                </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white rounded-lg">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Material</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Min</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expiry</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {category.materials.map(material => {
-                          const daysUntilExpiry = getDaysUntilExpiry(material.expiryDate);
-                          const isExpired = daysUntilExpiry !== null && daysUntilExpiry < 0;
-                          const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
-                          
-                          return (
-                            <tr key={material.id}>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                                {editingMaterialId === material.id ? (
-                                  <div className="flex items-center gap-2">
-                                    <Input
-                                      value={editValue}
-                                      onChange={(e) => setEditValue(e.target.value)}
-                                      className="w-32"
-                                    />
-                                    <Button
-                                      size="sm"
-                                      className="text-green-600"
-                                      variant="ghost"
-                                      onClick={() => saveEditedMaterial(category.id, material.id)}
-                                    >
-                                      <Check className="w-4 h-4" />
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      className="text-red-600"
-                                      variant="ghost"
-                                      onClick={() => setEditingMaterialId(null)}
-                                    >
-                                      <X className="w-4 h-4" />
-                                    </Button>
-                                  </div>
-                                ) : (
-                                  <div className="flex items-center gap-2">
-                                    <span>{material.name}</span>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleEditMaterial(material.id, material.name)}
-                                    >
-                                      <Edit2 className="w-4 h-4" />
-                                    </Button>
-                                  </div>
-                                )}
-                                {material.location && (
-                                  <div className="text-xs text-gray-500 mt-1">
-                                    Location: {material.location}
-                                  </div>
-                                )}
-                                {material.supplier && (
-                                  <div className="text-xs text-gray-500">
-                                    Supplier: {material.supplier}
-                                  </div>
-                                )}
-                              </td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                                {material.quantity <= material.minRequired ? (
-                                  <span className="text-red-500 font-medium">{material.quantity}</span>
-                                ) : (
-                                  material.quantity
-                                )}
-                              </td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{material.minRequired}</td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{material.unit}</td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm">
-                                {material.expiryDate ? (
-                                  <div>
-                                    <div className={`
-                                      ${isExpired ? 'text-red-600' : isExpiringSoon ? 'text-amber-600' : 'text-gray-600'}
-                                    `}>
-                                      {new Date(material.expiryDate).toLocaleDateString()}
-                                    </div>
-                                    {isExpired ? (
-                                      <span className="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">
-                                        Expired
-                                      </span>
-                                    ) : isExpiringSoon ? (
-                                      <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">
-                                        {daysUntilExpiry} days left
-                                      </span>
-                                    ) : null}
-                                  </div>
-                                ) : (
-                                  <span className="text-gray-400">N/A</span>
-                                )}
-                              </td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                                <Button
-                                  variant="ghost" 
-                                  size="sm"
-                                  className="text-red-500"
-                                  onClick={() => handleDeleteMaterial(category.id, material.id)}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={getPieChartData(category)}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={100}
-                          fill={category.color}
-                          dataKey="value"
-                          label={({ name, value }) => `${name}: ${value}`}
-                        >
-                          {getPieChartData(category).map((entry, index) => {
-                            const colors = generatePieColors(category);
-                            return (
-                              <Cell 
-                                key={`cell-${index}`} 
-                                fill={colors[index % colors.length]}
-                              />
-                            );
-                          })}
-                        </Pie>
-                        <Tooltip />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </Card>
       </div>
     </Layout>
   );
