@@ -22,7 +22,6 @@ const mockMessages = [
 ];
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
-  const [isChatOpen, setIsChatOpen] = React.useState(false);
   const [messages, setMessages] = React.useState(mockMessages);
   const [input, setInput] = React.useState("");
 
@@ -43,11 +42,11 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-[#F8FAFC]">
-        <Sidebar className="bg-white border-r">
+      <div className="min-h-screen flex w-full bg-background cosmic-particles">
+        <Sidebar className="glass-card border-r border-white/5">
           <div className="px-6 py-5 mb-6">
-            <h1 className="text-2xl font-semibold text-primary">EcoVision</h1>
-            <p className="text-sm text-secondary mt-1">Enterprise Management</p>
+            <h1 className="text-2xl font-semibold gradient-text">EcoVision</h1>
+            <p className="text-sm text-muted-foreground mt-1">Enterprise Management</p>
           </div>
           <SidebarContent>
             <SidebarGroup>
@@ -55,8 +54,8 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                 {menuItems.map((item) => (
                   <SidebarMenuItem key={item.label}>
                     <SidebarMenuButton asChild>
-                      <a href={item.href} className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-accent">
-                        <item.icon className="w-5 h-5" />
+                      <a href={item.href} className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
+                        <item.icon className="w-5 h-5 text-primary" />
                         <span>{item.label}</span>
                       </a>
                     </SidebarMenuButton>
@@ -75,16 +74,16 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
           <Sheet>
             <SheetTrigger asChild>
               <Button
-                className="fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg"
+                className="fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg glow"
                 size="icon"
               >
                 <MessageSquare className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[400px] sm:w-[540px] h-full">
+            <SheetContent className="w-[400px] sm:w-[540px] h-full glass-card border-white/5">
               <div className="flex flex-col h-full">
-                <div className="flex items-center justify-between pb-4 border-b">
-                  <h2 className="text-lg font-semibold">AI Assistant</h2>
+                <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                  <h2 className="text-lg font-semibold gradient-text">AI Assistant</h2>
                   <Button variant="ghost" size="icon">
                     <X className="h-4 w-4" />
                   </Button>
@@ -99,8 +98,8 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                       <div
                         className={`max-w-[80%] p-4 rounded-lg ${
                           message.role === 'assistant'
-                            ? 'bg-accent text-foreground'
-                            : 'bg-primary text-primary-foreground'
+                            ? 'bg-accent/30 text-foreground'
+                            : 'bg-primary/80 text-primary-foreground'
                         }`}
                       >
                         {message.content}
@@ -109,7 +108,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                   ))}
                 </div>
 
-                <div className="pt-4 border-t">
+                <div className="pt-4 border-t border-white/10">
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -117,7 +116,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
                       onChange={(e) => setInput(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                       placeholder="Ask me anything about your business..."
-                      className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="flex-1 px-4 py-2 border border-white/10 bg-background/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                     <Button onClick={handleSendMessage}>Send</Button>
                   </div>
