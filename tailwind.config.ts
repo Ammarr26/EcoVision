@@ -26,7 +26,7 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#7E69AB",
+          DEFAULT: "#9370DB", // Soft purple
           foreground: "#FFFFFF",
           100: "#E5DEFF",
         },
@@ -35,50 +35,50 @@ export default {
           foreground: "#FFFFFF",
         },
         success: {
-          DEFAULT: "#22C55E",
+          DEFAULT: "#4CAF50", // Adjusted green
           foreground: "#FFFFFF",
         },
         warning: {
-          DEFAULT: "#F59E0B",
+          DEFAULT: "#FF9800", // Adjusted orange
           foreground: "#FFFFFF",
         },
         destructive: {
-          DEFAULT: "#EF4444",
+          DEFAULT: "#F44336", // Adjusted red
           foreground: "#FFFFFF",
         },
         muted: {
-          DEFAULT: "#F1F5F9",
-          foreground: "#64748B",
+          DEFAULT: "#1E1E1E", // Darker for black theme
+          foreground: "#A0A0A0", // Lighter gray for contrast
         },
         accent: {
-          DEFAULT: "#F8FAFC",
-          foreground: "#0F172A",
+          DEFAULT: "#2A2A2A", // Soft dark accent
+          foreground: "#E0E0E0", // Light text for contrast
         },
-        // Page-specific colors
+        // Page-specific colors updated for black theme
         dashboard: {
-          primary: "#7E69AB",
-          accent: "#E5DEFF",
-          background: "#F8FAFC",
+          primary: "#9370DB", // Soft purple
+          accent: "#2D2B55", // Dark purple accent
+          background: "#121212",
         },
         inventory: {
-          primary: "#3B82F6",
-          accent: "#DBEAFE",
-          background: "#F1F5F9",
+          primary: "#4C83FF", // Royal blue
+          accent: "#1F2B3E", // Dark blue accent
+          background: "#121212",
         },
         finance: {
-          primary: "#10B981",
-          accent: "#D1FAE5",
-          background: "#F1FDF7",
+          primary: "#4CAF50", // Green
+          accent: "#1E3B2C", // Dark green accent
+          background: "#121212",
         },
         suppliers: {
-          primary: "#F59E0B",
-          accent: "#FEF3C7",
-          background: "#FFFBEB",
+          primary: "#FF9800", // Orange
+          accent: "#3B2E1F", // Dark orange accent
+          background: "#121212",
         },
         analytics: {
-          primary: "#EC4899",
-          accent: "#FCE7F3",
-          background: "#FDF2F8",
+          primary: "#F06292", // Pink
+          accent: "#3D2E36", // Dark pink accent
+          background: "#121212",
         },
       },
       borderRadius: {
@@ -99,11 +99,16 @@ export default {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        "pulse-subtle": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.8" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out forwards",
+        "pulse-subtle": "pulse-subtle 4s ease-in-out infinite",
       },
     },
   },
