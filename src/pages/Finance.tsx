@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
@@ -275,14 +274,14 @@ const Finance = () => {
 
   return (
     <Layout>
-      <div className="space-y-8 bg-finance-background min-h-screen">
-        <div className="bg-gradient-to-r from-finance-primary/20 to-finance-accent p-8 rounded-2xl">
-          <h1 className="text-3xl font-semibold text-finance-primary">Financial Overview</h1>
-          <p className="text-secondary mt-2">Monitor your financial performance</p>
+      <div className="space-y-8 min-h-screen">
+        <div className="glass-card p-8 rounded-2xl starlight">
+          <h1 className="text-3xl font-semibold gradient-text">Financial Overview</h1>
+          <p className="text-muted-foreground mt-2">Monitor your financial performance</p>
         </div>
 
         {/* Search and Filter Bar */}
-        <Card className="p-4 backdrop-blur-sm bg-white shadow-md">
+        <Card className="p-4 glass-card">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="relative w-full md:w-auto flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -290,7 +289,7 @@ const Finance = () => {
                 placeholder="Search transactions, categories..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-4 py-2 w-full"
+                className="pl-9 pr-4 py-2 w-full bg-background/30 border-white/10"
               />
             </div>
             <div className="flex gap-2 w-full md:w-auto">
@@ -307,7 +306,7 @@ const Finance = () => {
                 variant={filterType === 'income' ? "default" : "outline"}
                 size="sm" 
                 onClick={() => setFilterType('income')}
-                className="flex items-center whitespace-nowrap text-green-600"
+                className="flex items-center whitespace-nowrap text-success"
               >
                 <TrendingUp className="w-4 h-4 mr-1" />
                 Income
@@ -316,7 +315,7 @@ const Finance = () => {
                 variant={filterType === 'expense' ? "default" : "outline"}
                 size="sm" 
                 onClick={() => setFilterType('expense')}
-                className="flex items-center whitespace-nowrap text-red-600"
+                className="flex items-center whitespace-nowrap text-destructive"
               >
                 <CreditCard className="w-4 h-4 mr-1" />
                 Expenses
@@ -341,7 +340,6 @@ const Finance = () => {
             <StatsCard 
               key={stat.title} 
               {...stat} 
-              className="border-none shadow-lg hover:shadow-xl transition-shadow bg-white"
             />
           ))}
         </div>
@@ -349,27 +347,27 @@ const Finance = () => {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Left Column - Transaction Form */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
-              <h3 className="text-lg font-semibold mb-4 text-finance-primary">
+            <Card className="p-6 glass-card glow-card">
+              <h3 className="text-lg font-semibold mb-4 gradient-text">
                 {editingTransactionId ? "Edit Transaction" : "Add New Transaction"}
               </h3>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-secondary">Date</label>
+                    <label className="text-sm font-medium text-muted-foreground">Date</label>
                     <div className="flex">
                       <Input
                         type="date"
                         value={newTransaction.date}
                         onChange={(e) => setNewTransaction({...newTransaction, date: e.target.value})}
-                        className="w-full"
+                        className="w-full bg-background/30 border-white/10"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-secondary">Type</label>
+                    <label className="text-sm font-medium text-muted-foreground">Type</label>
                     <select
-                      className="w-full p-2 border rounded-md"
+                      className="w-full p-2 border rounded-md bg-background/30 border-white/10 text-foreground"
                       value={newTransaction.type}
                       onChange={(e) => setNewTransaction({...newTransaction, type: e.target.value as 'income' | 'expense'})}
                     >
@@ -380,28 +378,30 @@ const Finance = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-secondary">Description</label>
+                  <label className="text-sm font-medium text-muted-foreground">Description</label>
                   <Input
                     placeholder="Transaction description"
                     value={newTransaction.description}
                     onChange={(e) => setNewTransaction({...newTransaction, description: e.target.value})}
+                    className="bg-background/30 border-white/10"
                   />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-secondary">Amount ($)</label>
+                    <label className="text-sm font-medium text-muted-foreground">Amount ($)</label>
                     <Input
                       type="number"
                       placeholder="0.00"
                       value={newTransaction.amount}
                       onChange={(e) => setNewTransaction({...newTransaction, amount: e.target.value})}
+                      className="bg-background/30 border-white/10"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-secondary">Category</label>
+                    <label className="text-sm font-medium text-muted-foreground">Category</label>
                     <select
-                      className="w-full p-2 border rounded-md"
+                      className="w-full p-2 border rounded-md bg-background/30 border-white/10 text-foreground"
                       value={newTransaction.category}
                       onChange={(e) => setNewTransaction({...newTransaction, category: e.target.value})}
                     >
@@ -449,58 +449,61 @@ const Finance = () => {
               </div>
             </Card>
             
-            <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
-              <h3 className="text-lg font-semibold mb-4 text-finance-primary">Quick Budget Planner</h3>
+            <Card className="p-6 glass-card glow-card">
+              <h3 className="text-lg font-semibold mb-4 gradient-text">Quick Budget Planner</h3>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <div className="flex justify-between">
-                      <label className="text-sm font-medium text-secondary">Monthly Income</label>
-                      <span className="text-xs text-green-600">Projected: $125,000</span>
+                      <label className="text-sm font-medium text-muted-foreground">Monthly Income</label>
+                      <span className="text-xs text-success">Projected: $125,000</span>
                     </div>
                     <Input 
                       type="number" 
                       placeholder="0.00" 
                       defaultValue="125000"
+                      className="bg-background/30 border-white/10"
                     />
                   </div>
                   <div className="space-y-1">
                     <div className="flex justify-between">
-                      <label className="text-sm font-medium text-secondary">Monthly Expenses</label>
-                      <span className="text-xs text-red-600">Trend: +5%</span>
+                      <label className="text-sm font-medium text-muted-foreground">Monthly Expenses</label>
+                      <span className="text-xs text-destructive">Trend: +5%</span>
                     </div>
                     <Input 
                       type="number" 
                       placeholder="0.00" 
                       defaultValue="52234"
+                      className="bg-background/30 border-white/10"
                     />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-secondary">Savings Target (%)</label>
+                  <label className="text-sm font-medium text-muted-foreground">Savings Target (%)</label>
                   <Input 
                     type="number" 
                     placeholder="%" 
                     defaultValue="15"
+                    className="bg-background/30 border-white/10"
                   />
                   <div className="flex justify-between text-xs mt-1">
-                    <span>Min: 10%</span>
-                    <span className="text-amber-600">Recommended: 20%</span>
-                    <span>Max: 40%</span>
+                    <span className="text-muted-foreground">Min: 10%</span>
+                    <span className="text-warning">Recommended: 20%</span>
+                    <span className="text-muted-foreground">Max: 40%</span>
                   </div>
                 </div>
                 
                 <Button className="w-full">Calculate Budget</Button>
                 
                 <div className="grid grid-cols-2 gap-2 mt-4">
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <div className="text-xs text-secondary">Available for expenses</div>
-                    <div className="text-lg font-semibold">$106,250</div>
+                  <div className="p-3 bg-background/30 rounded-lg">
+                    <div className="text-xs text-muted-foreground">Available for expenses</div>
+                    <div className="text-lg font-semibold gradient-text">$106,250</div>
                   </div>
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <div className="text-xs text-secondary">Savings goal</div>
-                    <div className="text-lg font-semibold">$18,750</div>
+                  <div className="p-3 bg-background/30 rounded-lg">
+                    <div className="text-xs text-muted-foreground">Savings goal</div>
+                    <div className="text-lg font-semibold gradient-text">$18,750</div>
                   </div>
                 </div>
               </div>
@@ -509,17 +512,17 @@ const Finance = () => {
 
           {/* Right Column - Transactions Table */}
           <div className="lg:col-span-3">
-            <Card className="h-full p-6 backdrop-blur-sm bg-white shadow-lg flex flex-col">
+            <Card className="h-full p-6 glass-card glow-card flex flex-col">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-finance-primary">Recent Transactions</h3>
-                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                <h3 className="text-lg font-semibold gradient-text">Recent Transactions</h3>
+                <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
                   {filteredTransactions.length} transactions
                 </span>
               </div>
               
               <div className="overflow-auto flex-1">
                 {filteredTransactions.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full py-8 text-secondary">
+                  <div className="flex flex-col items-center justify-center h-full py-8 text-muted-foreground">
                     <ChevronsUpDown className="w-12 h-12 text-muted-foreground mb-3" />
                     {searchTerm ? 
                       "No transactions match your search criteria." : 
@@ -528,28 +531,28 @@ const Finance = () => {
                 ) : (
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-[100px]">Date</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                      <TableRow className="border-white/10">
+                        <TableHead className="w-[100px] text-muted-foreground">Date</TableHead>
+                        <TableHead className="text-muted-foreground">Description</TableHead>
+                        <TableHead className="text-muted-foreground">Category</TableHead>
+                        <TableHead className="text-right text-muted-foreground">Amount</TableHead>
+                        <TableHead className="text-right text-muted-foreground">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredTransactions.map((transaction) => (
-                        <TableRow key={transaction.id}>
+                        <TableRow key={transaction.id} className="border-white/10">
                           <TableCell className="font-medium">
                             {new Date(transaction.date).toLocaleDateString()}
                           </TableCell>
                           <TableCell>{transaction.description}</TableCell>
                           <TableCell>
-                            <span className="inline-block px-2 py-1 text-xs rounded-full bg-gray-100">
+                            <span className="inline-block px-2 py-1 text-xs rounded-full bg-accent/30">
                               {transaction.category}
                             </span>
                           </TableCell>
                           <TableCell className={`text-right font-medium ${
-                            transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                            transaction.type === 'income' ? 'text-success' : 'text-destructive'
                           }`}>
                             {transaction.type === 'income' ? '+' : '-'}${transaction.amount.toLocaleString()}
                           </TableCell>
@@ -558,7 +561,7 @@ const Finance = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 w-8 p-0"
+                                className="h-8 w-8 p-0 hover:bg-white/5"
                                 onClick={() => handleEditTransaction(transaction.id)}
                               >
                                 <Edit2 className="h-4 w-4" />
@@ -566,7 +569,7 @@ const Finance = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 w-8 p-0 text-red-600"
+                                className="h-8 w-8 p-0 text-destructive hover:bg-white/5"
                                 onClick={() => handleDeleteTransaction(transaction.id)}
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -584,24 +587,24 @@ const Finance = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
-            <h3 className="text-lg font-semibold mb-4 text-finance-primary">Revenue vs Expenses</h3>
+          <Card className="p-6 glass-card glow-card">
+            <h3 className="text-lg font-semibold mb-4 gradient-text">Revenue vs Expenses</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data.monthlyFinance}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="revenue" stroke="#22C55E" name="Revenue" />
-                  <Line type="monotone" dataKey="expenses" stroke="#EF4444" name="Expenses" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis dataKey="month" stroke="rgba(255,255,255,0.5)" />
+                  <YAxis stroke="rgba(255,255,255,0.5)" />
+                  <Tooltip contentStyle={{ backgroundColor: "rgba(30,30,30,0.8)", borderColor: "rgba(255,255,255,0.1)" }} />
+                  <Line type="monotone" dataKey="revenue" stroke="#9370DB" name="Revenue" strokeWidth={2} />
+                  <Line type="monotone" dataKey="expenses" stroke="#F44336" name="Expenses" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </Card>
 
-          <Card className="p-6 backdrop-blur-sm bg-white shadow-lg">
-            <h3 className="text-lg font-semibold mb-4 text-finance-primary">Expense Distribution</h3>
+          <Card className="p-6 glass-card glow-card">
+            <h3 className="text-lg font-semibold mb-4 gradient-text">Expense Distribution</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -617,7 +620,7 @@ const Finance = () => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip contentStyle={{ backgroundColor: "rgba(30,30,30,0.8)", borderColor: "rgba(255,255,255,0.1)" }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -625,15 +628,15 @@ const Finance = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="p-6 bg-warning/10 border-none shadow-lg">
-            <h4 className="font-medium text-warning">Maintenance Budget Alert</h4>
-            <p className="text-sm text-secondary mt-1">
+          <Card className="p-6 glass-card glow bg-warning/10">
+            <h4 className="font-medium gradient-text">Maintenance Budget Alert</h4>
+            <p className="text-sm text-muted-foreground mt-1">
               Maintenance expenses are approaching the monthly budget limit. Currently at 85% of allocated budget.
             </p>
           </Card>
-          <Card className="p-6 bg-success/10 border-none shadow-lg">
-            <h4 className="font-medium text-success">Cost Saving Opportunity</h4>
-            <p className="text-sm text-secondary mt-1">
+          <Card className="p-6 glass-card glow bg-success/10">
+            <h4 className="font-medium gradient-text">Cost Saving Opportunity</h4>
+            <p className="text-sm text-muted-foreground mt-1">
               Bulk purchase discount available from Supplier A. Potential savings of $3,200 on raw materials.
             </p>
           </Card>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { Card } from '@/components/ui/card';
@@ -37,10 +38,10 @@ const mockData = {
 const Suppliers = () => {
   return (
     <Layout>
-      <div className="space-y-8 bg-suppliers-background min-h-screen">
-        <div className="bg-gradient-to-l from-suppliers-primary/20 to-suppliers-accent p-8 rounded-2xl">
-          <h1 className="text-3xl font-semibold text-suppliers-primary">Supplier Management</h1>
-          <p className="text-secondary mt-2">Monitor and manage supplier relationships</p>
+      <div className="space-y-8 min-h-screen">
+        <div className="glass-card p-8 rounded-2xl starlight">
+          <h1 className="text-3xl font-semibold gradient-text">Supplier Management</h1>
+          <p className="text-muted-foreground mt-2">Monitor and manage supplier relationships</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -48,43 +49,45 @@ const Suppliers = () => {
             <StatsCard 
               key={stat.title} 
               {...stat} 
-              className="border-none shadow-lg hover:shadow-xl transition-shadow bg-white"
             />
           ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="p-6 bg-white/50 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4">Supplier Performance</h3>
+          <Card className="p-6 glass-card glow-card">
+            <h3 className="text-lg font-semibold mb-4 gradient-text">Supplier Performance</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={mockData.supplierPerformance}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="quality" fill="#2563EB" name="Quality Score" />
-                  <Bar dataKey="delivery" fill="#22C55E" name="Delivery Score" />
-                  <Bar dataKey="cost" fill="#EAB308" name="Cost Efficiency" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" />
+                  <YAxis stroke="rgba(255,255,255,0.5)" />
+                  <Tooltip contentStyle={{ backgroundColor: "rgba(30,30,30,0.8)", borderColor: "rgba(255,255,255,0.1)" }} />
+                  <Bar dataKey="quality" fill="#9370DB" name="Quality Score" />
+                  <Bar dataKey="delivery" fill="#4C83FF" name="Delivery Score" />
+                  <Bar dataKey="cost" fill="#4CAF50" name="Cost Efficiency" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </Card>
 
-          <Card className="p-6 bg-white/50 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold mb-4">Average Delivery Times</h3>
+          <Card className="p-6 glass-card glow-card">
+            <h3 className="text-lg font-semibold mb-4 gradient-text">Average Delivery Times</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={mockData.deliveryTimes}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis dataKey="month" stroke="rgba(255,255,255,0.5)" />
+                  <YAxis stroke="rgba(255,255,255,0.5)" />
+                  <Tooltip contentStyle={{ backgroundColor: "rgba(30,30,30,0.8)", borderColor: "rgba(255,255,255,0.1)" }} />
                   <Line 
                     type="monotone" 
                     dataKey="average" 
-                    stroke="#2563EB" 
+                    stroke="#9370DB" 
                     name="Avg. Delivery Time (Days)"
+                    strokeWidth={2}
+                    dot={{ fill: "#9370DB", strokeWidth: 2 }}
+                    activeDot={{ r: 8, fill: "#9370DB", stroke: "rgba(255,255,255,0.3)" }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -97,17 +100,17 @@ const Suppliers = () => {
             .sort((a, b) => (b.quality + b.delivery + b.cost) - (a.quality + a.delivery + a.cost))
             .slice(0, 3)
             .map((supplier, index) => (
-              <Card key={index} className="p-6 bg-white shadow-lg">
+              <Card key={index} className="p-6 glass-card glow-card">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-full bg-suppliers-accent">
-                    <Users className="w-6 h-6 text-suppliers-primary" />
+                  <div className="p-3 rounded-full bg-accent/30">
+                    <Users className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-suppliers-primary">{supplier.name}</h4>
+                    <h4 className="font-medium gradient-text">{supplier.name}</h4>
                     <div className="grid grid-cols-1 gap-2 mt-2">
-                      <p className="text-sm text-secondary">Quality: {supplier.quality}%</p>
-                      <p className="text-sm text-secondary">Delivery: {supplier.delivery}%</p>
-                      <p className="text-sm text-secondary">Cost Efficiency: {supplier.cost}%</p>
+                      <p className="text-sm text-muted-foreground">Quality: {supplier.quality}%</p>
+                      <p className="text-sm text-muted-foreground">Delivery: {supplier.delivery}%</p>
+                      <p className="text-sm text-muted-foreground">Cost Efficiency: {supplier.cost}%</p>
                     </div>
                   </div>
                 </div>
