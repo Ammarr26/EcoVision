@@ -376,15 +376,14 @@ const Inventory = () => {
 
   return (
     <Layout>
-      <div className="space-y-6 bg-inventory-background min-h-screen">
-        {/* Header */}
-        <div className="bg-gradient-to-br from-inventory-primary/20 via-inventory-accent to-inventory-background p-6 rounded-xl">
-          <h1 className="text-2xl font-semibold text-inventory-primary">Inventory Management</h1>
-          <p className="text-secondary mt-1">Track and manage your inventory items efficiently</p>
+      <div className="space-y-8 min-h-screen">
+        <div className="glass-card p-8 rounded-2xl starlight">
+          <h1 className="text-3xl font-semibold gradient-text">Inventory Management</h1>
+          <p className="text-muted-foreground mt-2">Track and manage your inventory items efficiently</p>
         </div>
 
         {/* Search and Filter Bar */}
-        <Card className="p-4 backdrop-blur-sm bg-white shadow-md">
+        <Card className="p-4 glass-card glow-card">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="relative w-full md:w-auto flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -392,7 +391,7 @@ const Inventory = () => {
                 placeholder="Search materials, suppliers, locations..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-4 py-2 w-full"
+                className="pl-9 pr-4 py-2 w-full bg-background/50 border-white/10"
               />
             </div>
             <div className="flex gap-2 w-full md:w-auto">
@@ -418,28 +417,27 @@ const Inventory = () => {
         </Card>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {stats.map((stat) => (
             <StatsCard 
               key={stat.title} 
-              {...stat} 
-              className="border-none shadow-md hover:shadow-lg transition-shadow bg-white"
+              {...stat}
             />
           ))}
         </div>
 
-        {/* Main Content Grid - Modified to make heights match */}
+        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Left Column - Category & Material Forms */}
           <div className="lg:col-span-2 space-y-6 flex flex-col">
-            <Card className="p-5 backdrop-blur-sm bg-white shadow-md">
-              <h3 className="text-md font-semibold mb-3 text-inventory-primary">Add New Category</h3>
+            <Card className="p-5 glass-card glow-card">
+              <h3 className="text-md font-semibold mb-3 gradient-text">Add New Category</h3>
               <div className="flex gap-2">
                 <Input
                   placeholder="Category Name"
                   value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e.target.value)}
-                  className="flex-1"
+                  className="flex-1 bg-background/50 border-white/10"
                 />
                 <Button onClick={handleAddCategory} size="sm">
                   <Plus className="w-4 h-4 mr-1" />
@@ -448,11 +446,11 @@ const Inventory = () => {
               </div>
             </Card>
 
-            <Card className="p-5 backdrop-blur-sm bg-white shadow-md flex-1">
-              <h3 className="text-md font-semibold mb-3 text-inventory-primary">Add New Material</h3>
+            <Card className="p-5 glass-card glow-card flex-1">
+              <h3 className="text-md font-semibold mb-3 gradient-text">Add New Material</h3>
               <div className="space-y-3">
                 <select
-                  className="w-full border rounded-md p-2 text-sm"
+                  className="w-full border border-white/10 rounded-md p-2 text-sm bg-background/50"
                   onChange={(e) => setSelectedCategory(categories.find(c => c.id === e.target.value) || null)}
                   value={selectedCategory?.id || ''}
                 >
@@ -466,40 +464,47 @@ const Inventory = () => {
                     placeholder="Material Name"
                     value={newMaterial.name}
                     onChange={(e) => setNewMaterial({...newMaterial, name: e.target.value})}
+                    className="bg-background/50 border-white/10"
                   />
                   <Input
                     type="number"
                     placeholder="Quantity"
                     value={newMaterial.quantity}
                     onChange={(e) => setNewMaterial({...newMaterial, quantity: e.target.value})}
+                    className="bg-background/50 border-white/10"
                   />
                   <Input
                     placeholder="Unit (e.g., pcs, kg)"
                     value={newMaterial.unit}
                     onChange={(e) => setNewMaterial({...newMaterial, unit: e.target.value})}
+                    className="bg-background/50 border-white/10"
                   />
                   <Input
                     type="number"
                     placeholder="Minimum Required"
                     value={newMaterial.minRequired}
                     onChange={(e) => setNewMaterial({...newMaterial, minRequired: e.target.value})}
+                    className="bg-background/50 border-white/10"
                   />
                   <Input
                     type="date"
                     placeholder="Expiry Date"
                     value={newMaterial.expiryDate}
                     onChange={(e) => setNewMaterial({...newMaterial, expiryDate: e.target.value})}
+                    className="bg-background/50 border-white/10"
                   />
                   <Input
                     placeholder="Storage Location"
                     value={newMaterial.location}
                     onChange={(e) => setNewMaterial({...newMaterial, location: e.target.value})}
+                    className="bg-background/50 border-white/10"
                   />
                   <div className="col-span-2">
                     <Input
                       placeholder="Supplier"
                       value={newMaterial.supplier}
                       onChange={(e) => setNewMaterial({...newMaterial, supplier: e.target.value})}
+                      className="bg-background/50 border-white/10"
                     />
                   </div>
                 </div>
@@ -508,13 +513,13 @@ const Inventory = () => {
             </Card>
           </div>
 
-          {/* Right Column - Inventory Items - Modified to match height */}
+          {/* Right Column - Inventory Items */}
           <div className="lg:col-span-3 flex flex-col">
-            <Card className="p-5 backdrop-blur-sm bg-white shadow-md flex-1 flex flex-col">
+            <Card className="p-5 glass-card glow-card flex-1 flex flex-col">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-inventory-primary">Inventory Items</h3>
+                <h3 className="text-lg font-semibold gradient-text">Inventory Items</h3>
                 {filteredCategories.length === 0 && searchTerm && (
-                  <div className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded">
+                  <div className="text-xs text-amber-600 bg-amber-50/10 px-2 py-1 rounded">
                     No results for "{searchTerm}" - try another search
                   </div>
                 )}
@@ -522,7 +527,7 @@ const Inventory = () => {
               
               <div className="flex-1 overflow-auto">
                 {filteredCategories.length === 0 ? (
-                  <div className="text-center py-8 text-secondary">
+                  <div className="text-center py-8 text-muted-foreground">
                     {searchTerm ? "No items match your search criteria." : "No categories available. Add your first category above."}
                   </div>
                 ) : (
@@ -534,7 +539,7 @@ const Inventory = () => {
                             <Input
                               value={editValue}
                               onChange={(e) => setEditValue(e.target.value)}
-                              className="w-48 text-sm"
+                              className="w-48 text-sm bg-background/50 border-white/10"
                             />
                             <Button
                               size="sm"
@@ -555,7 +560,7 @@ const Inventory = () => {
                           </div>
                         ) : (
                           <div className="flex items-center gap-2">
-                            <h3 className="text-md font-semibold text-inventory-primary">{category.name}</h3>
+                            <h3 className="text-md font-semibold gradient-text">{category.name}</h3>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -578,31 +583,31 @@ const Inventory = () => {
                       </div>
                       
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <div className="overflow-x-auto bg-gray-50 rounded-lg p-2">
+                        <div className="overflow-x-auto bg-background/30 backdrop-blur-sm border border-white/5 rounded-lg p-2">
                           <table className="min-w-full rounded-lg text-sm">
-                            <thead className="bg-gray-100">
+                            <thead className="bg-background/50">
                               <tr>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Material</th>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Unit</th>
-                                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">Material</th>
+                                <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">Qty</th>
+                                <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">Unit</th>
+                                <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">Actions</th>
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
+                            <tbody className="divide-y divide-white/5">
                               {category.materials.map(material => {
                                 const daysUntilExpiry = getDaysUntilExpiry(material.expiryDate);
                                 const isExpired = daysUntilExpiry !== null && daysUntilExpiry < 0;
                                 const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry >= 0 && daysUntilExpiry <= 30;
                                 
                                 return (
-                                  <tr key={material.id} className="hover:bg-gray-100 transition-colors">
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                  <tr key={material.id} className="hover:bg-white/5 transition-colors">
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm">
                                       {editingMaterialId === material.id ? (
                                         <div className="flex items-center gap-1">
                                           <Input
                                             value={editValue}
                                             onChange={(e) => setEditValue(e.target.value)}
-                                            className="w-28 h-7 text-xs"
+                                            className="w-28 h-7 text-xs bg-background/50 border-white/10"
                                           />
                                           <Button
                                             size="sm"
@@ -634,7 +639,7 @@ const Inventory = () => {
                                               <Edit2 className="w-3 h-3" />
                                             </Button>
                                           </div>
-                                          <div className="text-xs text-gray-500 mt-0.5 space-x-1">
+                                          <div className="text-xs text-muted-foreground mt-0.5 space-x-1">
                                             {material.location && <span>Location: {material.location}</span>}
                                             {material.supplier && <span>• Supplier: {material.supplier}</span>}
                                           </div>
@@ -642,7 +647,7 @@ const Inventory = () => {
                                             <div className={`text-xs mt-0.5 ${
                                               isExpired ? 'text-red-600' : 
                                               isExpiringSoon ? 'text-amber-600' : 
-                                              'text-gray-500'
+                                              'text-muted-foreground'
                                             }`}>
                                               {isExpired ? 'Expired' : 'Expires'}: {new Date(material.expiryDate).toLocaleDateString()}
                                             </div>
@@ -657,8 +662,8 @@ const Inventory = () => {
                                         material.quantity
                                       )}
                                     </td>
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">{material.unit}</td>
-                                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm">{material.unit}</td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-sm">
                                       <Button
                                         variant="ghost" 
                                         size="sm"
@@ -697,7 +702,7 @@ const Inventory = () => {
                                   );
                                 })}
                               </Pie>
-                              <Tooltip />
+                              <Tooltip contentStyle={{ backgroundColor: "rgba(30,30,30,0.8)", borderColor: "rgba(255,255,255,0.1)" }} />
                             </PieChart>
                           </ResponsiveContainer>
                         </div>
@@ -712,13 +717,13 @@ const Inventory = () => {
 
         {/* Expiry Tracking Section (At the bottom) */}
         {(expiringMaterials.length > 0 || expiredMaterials.length > 0) && (
-          <Card className="p-5 backdrop-blur-sm bg-white shadow-md">
+          <Card className="p-5 glass-card glow-card">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold text-inventory-primary flex items-center">
+              <h3 className="text-lg font-semibold gradient-text flex items-center">
                 <Clock className="w-5 h-5 mr-2 text-amber-500" />
                 Materials Expiry Tracker
               </h3>
-              <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
+              <span className="text-xs bg-accent/30 text-primary-foreground px-2 py-1 rounded-full">
                 {expiringMaterials.length} expiring soon • {expiredMaterials.length} expired
               </span>
             </div>
@@ -726,20 +731,20 @@ const Inventory = () => {
             <div className="space-y-4">
               {expiringMaterials.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-secondary mb-2">Expiring Soon</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Expiring Soon</h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {expiringMaterials.slice(0, 3).map(({ material, category, daysLeft }) => (
-                      <div key={material.id} className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                      <div key={material.id} className="p-3 bg-accent/10 rounded-lg border border-accent/20">
                         <div className="flex justify-between items-start">
                           <span className="font-medium">{material.name}</span>
-                          <span className="text-amber-600 text-xs bg-amber-100 px-1.5 py-0.5 rounded-full">
+                          <span className="text-amber-600 text-xs bg-amber-500/10 px-1.5 py-0.5 rounded-full">
                             {daysLeft} days left
                           </span>
                         </div>
-                        <div className="text-sm text-secondary mt-1">
+                        <div className="text-sm text-muted-foreground mt-1">
                           Category: {category} • Qty: {material.quantity} {material.unit}
                         </div>
-                        <div className="mt-2 text-xs italic text-amber-700">
+                        <div className="mt-2 text-xs italic text-amber-500/80">
                           {daysLeft <= 7 
                             ? "Urgent: Use in production or discount."
                             : "Plan to use in upcoming production."}
@@ -749,7 +754,7 @@ const Inventory = () => {
                   </div>
                   {expiringMaterials.length > 3 && (
                     <div className="text-right mt-2">
-                      <Button variant="link" size="sm" className="text-amber-600">
+                      <Button variant="link" size="sm" className="text-amber-500">
                         View all {expiringMaterials.length} expiring items →
                       </Button>
                     </div>
@@ -765,17 +770,17 @@ const Inventory = () => {
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {expiredMaterials.slice(0, 3).map(({ material, category, daysOverdue }) => (
-                      <div key={material.id} className="p-3 bg-red-50 rounded-lg border border-red-200">
+                      <div key={material.id} className="p-3 bg-destructive/10 rounded-lg border border-destructive/20">
                         <div className="flex justify-between items-start">
                           <span className="font-medium">{material.name}</span>
-                          <span className="text-destructive text-xs bg-red-100 px-1.5 py-0.5 rounded-full">
+                          <span className="text-destructive text-xs bg-destructive/10 px-1.5 py-0.5 rounded-full">
                             {daysOverdue} days ago
                           </span>
                         </div>
-                        <div className="text-sm text-secondary mt-1">
+                        <div className="text-sm text-muted-foreground mt-1">
                           Category: {category} • Qty: {material.quantity} {material.unit}
                         </div>
-                        <div className="mt-2 text-xs italic text-destructive">
+                        <div className="mt-2 text-xs italic text-destructive/80">
                           Review for disposal per company policy.
                         </div>
                       </div>
